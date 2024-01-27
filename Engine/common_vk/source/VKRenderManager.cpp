@@ -394,10 +394,10 @@ void VKRenderManager::LoadQuad(glm::vec4 color_, float isTex_, float isTexel_)
 
 void VKRenderManager::LoadLineQuad(glm::vec4 color_)
 {
-	lineVertices.push_back(Vertex(glm::vec4(-1.f, 1.f, 1.f, 1.f), color_, quadCount, 0.f));
-	lineVertices.push_back(Vertex(glm::vec4(1.f, 1.f, 1.f, 1.f), color_, quadCount, 0.f));
-	lineVertices.push_back(Vertex(glm::vec4(1.f, -1.f, 1.f, 1.f), color_, quadCount, 0.f));
-	lineVertices.push_back(Vertex(glm::vec4(-1.f, -1.f, 1.f, 1.f), color_, quadCount, 0.f));
+	lineVertices.push_back(Vertex(glm::vec4(-1.f, 1.f, 1.f, 1.f), color_, quadCount, 0.f, 0.f));
+	lineVertices.push_back(Vertex(glm::vec4(1.f, 1.f, 1.f, 1.f), color_, quadCount, 0.f, 0.f));
+	lineVertices.push_back(Vertex(glm::vec4(1.f, -1.f, 1.f, 1.f), color_, quadCount, 0.f, 0.f));
+	lineVertices.push_back(Vertex(glm::vec4(-1.f, -1.f, 1.f, 1.f), color_, quadCount, 0.f, 0.f));
 	if (lineVertex != nullptr)
 		delete lineVertex;
 	lineVertex = new VKVertexBuffer(vkInit, &lineVertices);
@@ -716,6 +716,29 @@ void VKRenderManager::BeginRender()
 	vkCmdSetPrimitiveTopology(*currentCommandBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 	//Draw
 	vkCmdDrawIndexed(*currentCommandBuffer, texIndices.size(), 1, 0, 0, 0);
+
+	std::vector<Vertex> testVertices;
+	testVertices.push_back(Vertex(glm::vec4(-0.5f, 0.5f, 0.5f, 0.5f), glm::vec4(1.f, 0.f, 0.f, 1.f), 0, 0.f, 0.f));
+	testVertices.push_back(Vertex(glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec4(1.f, 0.f, 0.f, 1.f), 0, 0.f, 0.f));
+	testVertices.push_back(Vertex(glm::vec4(0.5f, -0.5f, 0.5f, 0.5f), glm::vec4(1.f, 0.f, 0.f, 1.f), 0, 0.f, 0.f));
+	testVertices.push_back(Vertex(glm::vec4(-0.5f, -0.5f, 0.5f, 0.5f), glm::vec4(1.f, 0.f, 0.f, 1.f), 0, 0.f, 0.f));
+	VKVertexBuffer* testVertex = new VKVertexBuffer(vkInit, &testVertices);
+
+	uint64_t indexNumber{ lineVertices.size() / 4 - 1 };
+	std::vector<uint16_t> testIndices;
+	testIndices.push_back(4 * 0);
+	testIndices.push_back(4 * 0 + 1);
+	testIndices.push_back(4 * 0 + 2);
+	testIndices.push_back(4 * 0 + 2);
+	testIndices.push_back(4 * 0 + 3);
+	testIndices.push_back(4 * 0);
+	VKIndexBuffer* testIndex = new VKIndexBuffer(vkInit, &vkCommandPool, &testIndices);
+	//Bind Vertex Buffer
+	vkCmdBindVertexBuffers(*currentCommandBuffer, 0, 1, testVertex->GetVertexBuffer(), &vertexBufferOffset);
+	//Bind Index Buffer
+	vkCmdBindIndexBuffer(*currentCommandBuffer, *testIndex->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
+	//Draw
+	vkCmdDrawIndexed(*currentCommandBuffer, testIndices.size(), 1, 0, 0, 0);
 
 	//Bind Vertex Buffer
 	vkCmdBindVertexBuffers(*currentCommandBuffer, 0, 1, lineVertex->GetVertexBuffer(), &vertexBufferOffset);
