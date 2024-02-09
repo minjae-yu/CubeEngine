@@ -9,8 +9,8 @@ layout(location = 1) in int index;
 
 layout(location = 0) out vec2 o_uv;
 layout(location = 1) out vec4 o_col;
-layout(location = 2) out int outTexIndex;
-layout(location = 3) out float outIsTex;
+layout(location = 2) out float outIsTex;
+layout(location = 3) out int outTexIndex;
 
 struct Matrix
 {
