@@ -29,25 +29,25 @@ void PlatformDemo::Init()
 	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/TrainSide.png", "trainSide");
 
 	platformDemoSystem->LoadLevelData("../Game/assets/PlatformDemo/Stage.txt");
-	Engine::GetObjectManager().AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem);
-	Engine::GetObjectManager().AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL);
-	Engine::GetObjectManager().AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP);
+	GameState::objectManager->AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem);
+	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL);
+	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP);
 	platformDemoSystem->InitHealthBar();
 }
 
 void PlatformDemo::Update(float dt)
 {
-	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
+	if (GameState::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
 	{
-		Engine::GetGameStateManager().ChangeLevel(GameLevel::POCKETBALL);
+		GameState::gameStateManager->ChangeLevel(GameLevel::POCKETBALL);
 	}
-	else if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
+	else if (GameState::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
 	{
-		Engine::GetGameStateManager().ChangeLevel(GameLevel::PLATFORMDEMO);
+		GameState::gameStateManager->ChangeLevel(GameLevel::PLATFORMDEMO);
 	}
-	else if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::R))
+	else if (GameState::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::R))
 	{
-		Engine::GetGameStateManager().SetGameState(State::RESTART);
+		GameState::gameStateManager->SetGameState(State::RESTART);
 	}
 
 	platformDemoSystem->Update(dt);
@@ -57,8 +57,8 @@ void PlatformDemo::Update(float dt)
 void PlatformDemo::ImGuiDraw(float /*dt*/)
 {
 	ImGui::ShowDemoWindow();
-	Engine::GetGameStateManager().StateChanger();
-	Engine::GetSoundManager().MusicPlayerForImGui();
+	GameState::gameStateManager->StateChanger();
+	GameState::soundManager->MusicPlayerForImGui();
 	platformDemoSystem->UpdateMapEditorImGui();
 }
 #endif
@@ -75,8 +75,8 @@ void PlatformDemo::End()
 	delete platformDemoSystem;
 	platformDemoSystem = nullptr;
 
-	Engine::GetCameraManager().Reset();
-	Engine::GetParticleManager().Clear();
-	Engine::GetObjectManager().DestroyAllObjects();
+	GameState::cameraManager->Reset();
+	GameState::particleManager->Clear();
+	GameState::objectManager->DestroyAllObjects();
 }
 

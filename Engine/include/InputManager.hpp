@@ -153,13 +153,15 @@ enum class KEYBOARDKEYS
 	 MODE = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_MODE),
 };
 
+class CameraManager;
 
 class InputManager
 {
 public:
 	InputManager() = default;
-	~InputManager() = default;
+	~InputManager() { cameraManager = nullptr; }
 
+	void Init(CameraManager* cameraManager_) { cameraManager = cameraManager_; }
 	void InputPollEvent(SDL_Event& event);
 
 	bool IsKeyPressed(KEYBOARDKEYS keycode);
@@ -206,4 +208,6 @@ private:
 
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStates;
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStatePrev;
+
+	CameraManager* cameraManager = nullptr;
 };

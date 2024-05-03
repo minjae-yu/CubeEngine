@@ -12,11 +12,13 @@
 #include <vector>
 
 struct Vertex;
+class SpriteManager;
+class CameraManager;
 
 class Sprite : public Component
 {
 public:
-	Sprite() : Component(ComponentTypes::SPRITE) { Init(); };
+	Sprite(SpriteManager* spriteManager_, CameraManager* cameraManager_) : Component(ComponentTypes::SPRITE), spriteManager(spriteManager_), cameraManager(cameraManager_){ Init(); };
 	~Sprite() override;
 	
 	void Init() override;
@@ -63,4 +65,6 @@ private:
 	std::vector<Animation*> animations;
 
 	int materialId = 0;
+	SpriteManager* spriteManager = nullptr;
+	CameraManager* cameraManager = nullptr;
 };

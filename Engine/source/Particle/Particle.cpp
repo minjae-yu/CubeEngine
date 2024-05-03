@@ -4,7 +4,7 @@
 #include "Particle/Particle.hpp"
 #include "Engine.hpp"
 
-Particle::Particle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime_, ParticleType type, std::string spriteName_, glm::vec4 color_, ParticleEffect particE)
+Particle::Particle(SpriteManager* spriteManager_, CameraManager* cameraManager_, glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime_, ParticleType type, std::string spriteName_, glm::vec4 color_, ParticleEffect particE)
 {
 	position = position_;
 	size = size_;
@@ -20,18 +20,18 @@ Particle::Particle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float
 	switch (particleType)
 	{
 	case ParticleType::ANIMESPRI:
-		sprite = new Sprite();
+		sprite = new Sprite(spriteManager_, cameraManager_);
 		sprite->LoadAnimation(spriteName, spriteName);
 		sprite->SetColor(color);
 		sprite->PlayAnimation(0);
 		break;
 	case ParticleType::SPRI:
-		sprite = new Sprite();
+		sprite = new Sprite(spriteManager_, cameraManager_);
 		sprite->AddMeshWithTexel(spriteName);
 		sprite->SetColor(color);
 		break;
 	case ParticleType::REC:
-		sprite = new Sprite();
+		sprite = new Sprite(spriteManager_, cameraManager_);
 		sprite->AddQuad(color);
 		break;
 	}

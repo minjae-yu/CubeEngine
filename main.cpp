@@ -3,9 +3,9 @@
 //File: main.cpp
 #include "Engine.hpp"
 
-#include "VerticesDemo.hpp"
-#include "PocketBallDemo/PocketBallDemo.hpp"
-#include "PlatformDemo/PlatformDemo.hpp"
+//#include "VerticesDemo.hpp"
+//#include "PocketBallDemo/PocketBallDemo.hpp"
+//#include "PlatformDemo/PlatformDemo.hpp"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -21,21 +21,35 @@
 int main(void)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //_CrtSetBreakAlloc(158);
+    _CrtSetBreakAlloc(1991827);
     //_crtBreakAlloc = 157;
+
+    GameStateManager gameStateManger;
+    InputManager inputManager;
+    ObjectManager objectManager;
+    CameraManager cameraManager;
+    SoundManager soundManager;
+    SpriteManager spriteManager;
+    ParticleManager particleManager;
 
     Engine& engine = Engine::Instance();
     engine.Init("Vulkan Demo", 1280, 720, false, WindowMode::NORMAL);
     engine.SetFPS(FrameRate::FPS_60);
 
-    engine.GetSoundManager().LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
-    engine.GetSoundManager().LoadSoundFilesFromFolder("../Game/assets/Sounds");
+    gameStateManger.Init(&spriteManager, &objectManager, &particleManager, &cameraManager, &soundManager, &inputManager);
+    soundManager.Initialize();
+    cameraManager.Init({ 1280 ,720 }, CameraType::TwoDimension, 1.f);
+    inputManager.Init(&cameraManager);
+    particleManager.InitP(&spriteManager, &cameraManager);
 
-    engine.GetGameStateManager().AddLevel(new PocketBallDemo);
-    engine.GetGameStateManager().AddLevel(new PlatformDemo);
-    engine.GetGameStateManager().LevelInit(GameLevel::PLATFORMDEMO);
+    //engine.GetSoundManager().LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
+    //engine.GetSoundManager().LoadSoundFilesFromFolder("../Game/assets/Sounds");
 
-    engine.Update();
+    //engine.GetGameStateManager().AddLevel(new PocketBallDemo);
+    //engine.GetGameStateManager().AddLevel(new PlatformDemo);
+    //engine.GetGameStateManager().LevelInit(GameLevel::POCKETBALL);
+
+    engine.Update(&inputManager, &gameStateManger);
     engine.End();
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);

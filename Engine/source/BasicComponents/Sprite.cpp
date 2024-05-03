@@ -17,8 +17,10 @@ Sprite::~Sprite()
 	animations.clear();
 	if (this != nullptr)
 	{
-		Engine::GetSpriteManager().DeleteSprite(this);
+		spriteManager->DeleteSprite(this);
 	}
+	spriteManager = nullptr;
+	cameraManager = nullptr;
 }
 
 void Sprite::Init()
@@ -36,7 +38,7 @@ void Sprite::Update(float dt)
 
 void Sprite::End()
 {
-	Engine::GetSpriteManager().DeleteSprite(this);
+	spriteManager->DeleteSprite(this);
 }
 
 void Sprite::UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle)
@@ -52,12 +54,12 @@ void Sprite::UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle)
 
 void Sprite::UpdateView()
 {
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).view = Engine::GetCameraManager().GetViewMatrix();
+	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).view = cameraManager->GetViewMatrix();
 }
 
 void Sprite::UpdateProjection()
 {
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).projection = Engine::GetCameraManager().GetProjectionMatrix();
+	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).projection = cameraManager->GetProjectionMatrix();
 }
 
 void Sprite::AddQuad(glm::vec4 color_)
@@ -246,7 +248,7 @@ void Sprite::ChangeTexture(std::string name)
 
 void Sprite::AddSpriteToManager()
 {
-	Engine::GetSpriteManager().AddSprite(this);
+	spriteManager->AddSprite(this);
 }
 
 void Sprite::SetColor(glm::vec4 color)

@@ -6,11 +6,12 @@
 
 #include "Particle.hpp"
 
+
 class ParticleManager
 {
 public:
 	ParticleManager() = default;
-    ~ParticleManager();
+	~ParticleManager();
 
 	//For Test
     void AddRandomParticle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime, int particleAmount, glm::vec4 color_ = { 1.f,1.f,1.f,1.f }, ParticleType type = ParticleType::REC, std::string spriteName_ = "", bool isFade = false);
@@ -22,6 +23,12 @@ public:
 	void Update(float dt);
 	void Clear();
 	Particle* GetLastParticle() { return &particles.at(particles.size() - 1); }
+
+	void InitP(SpriteManager* spriteManager_, CameraManager* cameraManager_);
+	void EndP();
 private:
 	std::vector<Particle> particles;
+
+	SpriteManager* spriteManager = nullptr;
+	CameraManager* cameraManager = nullptr;
 };
