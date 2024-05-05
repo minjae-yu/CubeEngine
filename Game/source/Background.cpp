@@ -2,12 +2,12 @@
 #include "GameState.hpp"
 #include "Engine.hpp"
 
-bool isInOfCamera(Background& back)
+bool BackgroundManager::isInOfCamera(Background& back)
 {
-	glm::vec2 windowSize = { static_cast<float>(Engine::GetCameraManager().GetViewSize().x),
-		static_cast<float>(Engine::GetCameraManager().GetViewSize().y) };
-	windowSize = (windowSize / Engine::GetCameraManager().GetZoom());
-	glm::vec2 cameraCenter = Engine::GetCameraManager().GetCenter();
+	glm::vec2 windowSize = { static_cast<float>(cameraManager->GetViewSize().x),
+		static_cast<float>(cameraManager->GetViewSize().y) };
+	windowSize = (windowSize / cameraManager->GetZoom());
+	glm::vec2 cameraCenter = cameraManager->GetCenter();
 	if ((back.position.x - (back.size.x)) < (windowSize.x / 2.f + cameraCenter.x) && (back.position.x + (back.size.x)) > -(windowSize.x / 2.f - cameraCenter.x)
 		&& (back.position.y - (back.size.y)) < (windowSize.y / 2.f + cameraCenter.y) && (back.position.y + (back.size.y)) > -(windowSize.y / 2.f - cameraCenter.y))
 	{
@@ -16,12 +16,12 @@ bool isInOfCamera(Background& back)
 	return false;
 }
 
-bool isInOfCameraE(Background& back)
+bool BackgroundManager::isInOfCameraE(Background& back)
 {
-	glm::vec2 windowSize = { static_cast<float>(Engine::GetCameraManager().GetViewSize().x),
-		static_cast<float>(Engine::GetCameraManager().GetViewSize().y) };
-	windowSize = (windowSize / Engine::GetCameraManager().GetZoom());
-	glm::vec2 cameraCenter = Engine::GetCameraManager().GetCenter();
+	glm::vec2 windowSize = { static_cast<float>(cameraManager->GetViewSize().x),
+		static_cast<float>(cameraManager->GetViewSize().y) };
+	windowSize = (windowSize / cameraManager->GetZoom());
+	glm::vec2 cameraCenter = cameraManager->GetCenter();
 
 	if (back.position.x - (back.size.x) < (windowSize.x / 2.f + cameraCenter.x) && back.position.x + (back.size.x) > -(windowSize.x / 2.f - cameraCenter.x)
 		&& back.position.y - (back.size.y) < (windowSize.y / 2.f + cameraCenter.y) && back.position.y + (back.size.y) > -(windowSize.y / 2.f - cameraCenter.y))
@@ -48,6 +48,7 @@ void BackgroundManager::AddNormalBackground(std::string spriteName_, glm::vec2 p
 	if (isAnimated == true)
 	{
 		temp.sprite = new Sprite;
+		temp.sprite->SetManagers(spriteManager, cameraManager);
 		temp.sprite->LoadAnimation(temp.spriteName, temp.spriteName);
 		temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 		temp.sprite->UpdateProjection();
@@ -56,6 +57,7 @@ void BackgroundManager::AddNormalBackground(std::string spriteName_, glm::vec2 p
 	else
 	{
 		temp.sprite = new Sprite;
+		temp.sprite->SetManagers(spriteManager, cameraManager);
 		temp.sprite->AddMeshWithTexture(temp.spriteName);
 		temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 		temp.sprite->UpdateProjection();
@@ -80,7 +82,7 @@ void BackgroundManager::AddVerticalParallexBackground(std::string spriteName_, s
 	saveb.isAnimation = isAnimated;
 	//saveBackgroundList[groupName].push_back(saveb);
 
-	glm::vec2 windowSize = { static_cast<float>(Engine::GetCameraManager().GetViewSize().x) , static_cast<float>(Engine::GetCameraManager().GetViewSize().y) };
+	glm::vec2 windowSize = { static_cast<float>(cameraManager->GetViewSize().x) , static_cast<float>(cameraManager->GetViewSize().y) };
 	int amount = static_cast<int>(windowSize.y / (size_.y * 2.f)) + 1;
 	if (windowSize.y < (size_.y * 2.f))
 	{
@@ -103,6 +105,7 @@ void BackgroundManager::AddVerticalParallexBackground(std::string spriteName_, s
 		if (isAnimated == true)
 		{
 			temp.sprite = new Sprite;
+			temp.sprite->SetManagers(spriteManager, cameraManager);
 			temp.sprite->LoadAnimation(temp.spriteName, temp.spriteName);
 			temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 			temp.sprite->UpdateProjection();
@@ -111,6 +114,7 @@ void BackgroundManager::AddVerticalParallexBackground(std::string spriteName_, s
 		else
 		{
 			temp.sprite = new Sprite;
+			temp.sprite->SetManagers(spriteManager, cameraManager);
 			temp.sprite->AddMeshWithTexture(temp.spriteName);
 			temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 			temp.sprite->UpdateProjection();
@@ -136,7 +140,7 @@ void BackgroundManager::AddHorizonParallexBackground(std::string spriteName_, st
 	saveb.type = BackgroundType::VPARALLEX; // 수정필요
 	//saveBackgroundList[groupName].push_back(saveb);
 
-	glm::vec2 windowSize = { static_cast<float>(Engine::GetCameraManager().GetViewSize().x) , static_cast<float>(Engine::GetCameraManager().GetViewSize().y) };
+	glm::vec2 windowSize = { static_cast<float>(cameraManager->GetViewSize().x) , static_cast<float>(cameraManager->GetViewSize().y) };
 	int amount = static_cast<int>(windowSize.x / (size_.x )) + 1;
 	if (windowSize.x < (size_.x))
 	{
@@ -159,6 +163,7 @@ void BackgroundManager::AddHorizonParallexBackground(std::string spriteName_, st
 		if (isAnimated == true)
 		{
 			temp.sprite = new Sprite;
+			temp.sprite->SetManagers(spriteManager, cameraManager);
 			temp.sprite->LoadAnimation(temp.spriteName, temp.spriteName);
 			temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 			temp.sprite->UpdateProjection();
@@ -167,6 +172,7 @@ void BackgroundManager::AddHorizonParallexBackground(std::string spriteName_, st
 		else
 		{
 			temp.sprite = new Sprite;
+			temp.sprite->SetManagers(spriteManager, cameraManager);
 			temp.sprite->AddMeshWithTexture(temp.spriteName);
 			temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 			temp.sprite->UpdateProjection();
@@ -195,6 +201,7 @@ void BackgroundManager::AddSaveBackgroundList(std::string spriteName_, std::stri
 	if (isAnimated == true)
 	{
 		temp.sprite = new Sprite;
+		temp.sprite->SetManagers(spriteManager, cameraManager);
 		temp.sprite->LoadAnimation(temp.spriteName, temp.spriteName);
 		temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 		temp.sprite->UpdateProjection();
@@ -203,6 +210,7 @@ void BackgroundManager::AddSaveBackgroundList(std::string spriteName_, std::stri
 	else
 	{
 		temp.sprite = new Sprite;
+		temp.sprite->SetManagers(spriteManager, cameraManager);
 		temp.sprite->AddMeshWithTexture(temp.spriteName);
 		temp.sprite->UpdateModel({ temp.position.x, temp.position.y, temp.depth }, { temp.size.x, temp.size.y, 0.f }, temp.angle);
 		temp.sprite->UpdateProjection();
@@ -235,10 +243,10 @@ void BackgroundManager::Update(float dt)
 				}
 
 				parallax.position.x -= parallax.speed.x;
-				if (parallax.position.x <= -(Engine::GetCameraManager().GetViewSize().x / 2.f)
-					+ Engine::GetCameraManager().GetCenter().x - parallax.size.x / 2.f)
+				if (parallax.position.x <= -(cameraManager->GetViewSize().x / 2.f)
+					+ cameraManager->GetCenter().x - parallax.size.x / 2.f)
 				{
-					parallax.position.x = Engine::GetCameraManager().GetViewSize().x / 2.f + parallax.size.x / 2.f + Engine::GetCameraManager().GetCenter().x;
+					parallax.position.x = cameraManager->GetViewSize().x / 2.f + parallax.size.x / 2.f + cameraManager->GetCenter().x;
 				}
 			}
 		}

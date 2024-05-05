@@ -10,7 +10,7 @@ class PocketBallSystem
 {
 public:
 	PocketBallSystem() = default;
-	~PocketBallSystem() {};
+	~PocketBallSystem() { EndManagers(); };
 
 	void Init();
 	void Update(float dt);

@@ -5,7 +5,7 @@
 
 //#include "VerticesDemo.hpp"
 #include "PocketBallDemo/PocketBallDemo.hpp"
-//#include "PlatformDemo/PlatformDemo.hpp"
+#include "PlatformDemo/PlatformDemo.hpp"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -43,12 +43,12 @@ int main(void)
     inputManager.Init(&cameraManager);
     particleManager.InitP(&spriteManager, &cameraManager);
 
-    soundManager.LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
-    soundManager.LoadSoundFilesFromFolder("../Game/assets/Sounds");
+    //soundManager.LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
+    //soundManager.LoadSoundFilesFromFolder("../Game/assets/Sounds");
 
     gameStateManager.AddLevel(new PocketBallDemo);
-    //gameStateManager.AddLevel(new PlatformDemo);
-    gameStateManager.LevelInit(GameLevel::POCKETBALL);
+    gameStateManager.AddLevel(new PlatformDemo);
+    gameStateManager.LevelInit(GameLevel::PLATFORMDEMO);
 
     engine.Update(&inputManager, &gameStateManager);
     engine.End();

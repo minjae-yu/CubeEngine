@@ -9,9 +9,10 @@
 #include "BasicComponents/Physics2D.hpp"
 #include "Engine.hpp"
 
-PEnemy::PEnemy(glm::vec3 pos_, glm::vec3 size_, std::string name, EnemyType type)
+PEnemy::PEnemy(glm::vec3 pos_, glm::vec3 size_, std::string name, EnemyType type, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
 	: Object(pos_, size_, name, ObjectType::ENEMY)
 {
+	SetManagers(spriteManager_, objectManager_, particleManager_, cameraManager_, inputManager_);
 	eType = type;
 	AddComponent<Physics2D>();
 	GetComponent<Physics2D>()->SetMinVelocity({ 0.01f, 0.1f });
@@ -22,6 +23,7 @@ PEnemy::PEnemy(glm::vec3 pos_, glm::vec3 size_, std::string name, EnemyType type
 	GetComponent<Physics2D>()->SetBodyType(BodyType::RIGID);
 
 	AddComponent<Sprite>();
+	GetComponent<Sprite>()->SetManagers(Object::spriteManager, Object::cameraManager);
 	switch (eType)
 	{
 	case EnemyType::NORMAL:
@@ -90,7 +92,7 @@ void PEnemy::CollideObject(Object* obj)
 			SetHp(GetHp() - b->GetDamage());
 			SetIsHit(true);
 
-			Engine::GetObjectManager().Destroy(b->GetId());
+			Object::objectManager->Destroy(b->GetId());
 			b = nullptr;
 		}
 		break;
@@ -150,7 +152,7 @@ void PEnemy::UpdateEnemyNormal(float dt)
 		{
 			if (GetComponent<Sprite>()->IsAnimationDone() == true)
 			{
-				Engine::GetObjectManager().Destroy(Object::id);
+				Object::objectManager->Destroy(Object::id);
 			}
 		}
 	}
@@ -160,14 +162,14 @@ void PEnemy::UpdateEnemyNormal(float dt)
 	{
 		Hit(dt);
 
-		if (Engine::GetCameraManager().IsInCamera(this) == true)
+		if (Object::cameraManager->IsInCamera(this) == true)
 		{
 			GetComponent<Physics2D>()->Gravity(dt);
 		}
 
-		/*if (Engine::GetObjectManager().FindObjectWithName("Player") != nullptr)
+		/*if (Object::objectManager->FindObjectWithName("Player") != nullptr)
 		{
-			Object* pTemp = Engine::GetObjectManager().FindObjectWithName("Player");
+			Object* pTemp = Object::objectManager->FindObjectWithName("Player");
 			if (pTemp->GetPosition().x > Object::position.x + abs(Object::size.x) / 3.f)
 			{
 				if (IsStateOn(EnemyStates::DIRECTION) == false)
@@ -186,7 +188,7 @@ void PEnemy::UpdateEnemyNormal(float dt)
 			}
 			pTemp = nullptr;
 		}*/
-		if (Engine::GetObjectManager().FindObjectWithName("Player")->GetPosition().x > Object::position.x + abs(Object::size.x) / 3.f)
+		if (Object::objectManager->FindObjectWithName("Player")->GetPosition().x > Object::position.x + abs(Object::size.x) / 3.f)
 		{
 			if (IsStateOn(EnemyStates::DIRECTION) == false)
 			{
@@ -194,7 +196,7 @@ void PEnemy::UpdateEnemyNormal(float dt)
 				SetStateOn(EnemyStates::DIRECTION);
 			}
 		}
-		else if (Engine::GetObjectManager().FindObjectWithName("Player")->GetPosition().x < Object::position.x - abs(Object::size.x) / 3.f)
+		else if (Object::objectManager->FindObjectWithName("Player")->GetPosition().x < Object::position.x - abs(Object::size.x) / 3.f)
 		{
 			if (IsStateOn(EnemyStates::DIRECTION) == true)
 			{
@@ -208,15 +210,15 @@ void PEnemy::UpdateEnemyNormal(float dt)
 			attackDelay += dt;
 			if (attackDelay > 2.f)
 			{
-				Engine::GetObjectManager().AddObject<PEnemyBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "EBullet");
+				Object::objectManager->AddObject<PEnemyBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "EBullet", Object::spriteManager, Object::objectManager, Object::particleManager, Object::cameraManager, Object::inputManager);
 
 				if (IsStateOn(EnemyStates::DIRECTION) == true)
 				{
-					Engine::GetObjectManager().GetLastObject()->SetXSpeed(1000.f);
+					Object::objectManager->GetLastObject()->SetXSpeed(1000.f);
 				}
 				else
 				{
-					Engine::GetObjectManager().GetLastObject()->SetXSpeed(-1000.f);
+					Object::objectManager->GetLastObject()->SetXSpeed(-1000.f);
 				}
 				GetComponent<Sprite>()->PlayAnimation(2);
 				SetStateOn(EnemyStates::ATTACK);
@@ -248,7 +250,7 @@ void PEnemy::UpdateEnemyBig(float dt)
 		{
 			if (GetComponent<Sprite>()->IsAnimationDone() == true)
 			{
-				Engine::GetObjectManager().Destroy(Object::id);
+				Object::objectManager->Destroy(Object::id);
 			}
 		}
 	}
@@ -259,8 +261,8 @@ void PEnemy::UpdateEnemyBig(float dt)
 		Hit(dt);
 		if (IsStateOn(EnemyStates::ONGROUND) == true)
 		{
-			glm::vec3 playerPos = Engine::GetObjectManager().FindObjectWithName("Player")->GetPosition();
-			if (Engine::GetCameraManager().IsInCamera(this) == true)
+			glm::vec3 playerPos = Object::objectManager->FindObjectWithName("Player")->GetPosition();
+			if (Object::cameraManager->IsInCamera(this) == true)
 			{
 				GetComponent<Physics2D>()->Gravity(dt);
 			}
@@ -365,16 +367,17 @@ void PEnemy::UpdateEnemyBig(float dt)
 							break;
 						}
 
-						Engine::GetObjectManager().AddObject<PEnemyBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "EBullet");
+						Object::objectManager->AddObject<PEnemyBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "EBullet", Object::spriteManager, Object::objectManager, Object::particleManager, Object::cameraManager, Object::inputManager);
+	
 						if (IsStateOn(EnemyStates::DIRECTION) == true)
 						{
-							Engine::GetObjectManager().GetLastObject()->SetYSpeed(dirY);
-							Engine::GetObjectManager().GetLastObject()->SetXSpeed(1000.f);
+							Object::objectManager->GetLastObject()->SetYSpeed(dirY);
+							Object::objectManager->GetLastObject()->SetXSpeed(1000.f);
 						}
 						else
 						{
-							Engine::GetObjectManager().GetLastObject()->SetYSpeed(dirY);
-							Engine::GetObjectManager().GetLastObject()->SetXSpeed(-1000.f);
+							Object::objectManager->GetLastObject()->SetYSpeed(dirY);
+							Object::objectManager->GetLastObject()->SetXSpeed(-1000.f);
 						}
 						GetComponent<Sprite>()->PlayAnimation(3);
 					}
@@ -414,15 +417,15 @@ void PEnemy::UpdateEnemyAirShip(float dt)
 			if (attackDelay > 0.1f)
 			{
 				attackDelay = 0.f;
-				Engine::GetParticleManager().AddSingleParticle({ Object::position.x + 48.f, Object::position.y + 48.f, 0.f }, { 96.f,96.f,0.f },
+				Object::particleManager->AddSingleParticle({ Object::position.x + 48.f, Object::position.y + 48.f, 0.f }, { 96.f,96.f,0.f },
 					{ 0.f,0.f,0.f }, 0.f, 10.f, { 1.f,1.f,1.f,1.f }, ParticleType::ANIMESPRI, "../Game/assets/PlatformDemo/explosion.spt");
 			}
 
 			if (Object::position.y <= -328.f)
 			{
-				Engine::GetParticleManager().AddSingleParticle(Object::position, { 128.f,128.f,0.f },
+				Object::particleManager->AddSingleParticle(Object::position, { 128.f,128.f,0.f },
 					{ 0.f,0.f,0.f }, 0.f, 10.f, { 1.f,1.f,1.f,1.f }, ParticleType::ANIMESPRI, "../Game/assets/PlatformDemo/explosion.spt");
-				Engine::GetObjectManager().Destroy(Object::id);
+				Object::objectManager->Destroy(Object::id);
 			}
 		}
 	}
@@ -439,7 +442,7 @@ void PEnemy::UpdateEnemyAirShip(float dt)
 			{
 				//Engine::GetObjectManager()->AddObject<PEnemy>(Object::position, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL);
 
-				Engine::GetObjectManager().AddObject<PEnemy>(Object::position, glm::vec3{ 224.f, 256.f,0.f }, "Enemy", EnemyType::BIG);
+				Object::objectManager->AddObject<PEnemy>(Object::position, glm::vec3{ 224.f, 256.f,0.f }, "Enemy", EnemyType::BIG, Object::spriteManager, Object::objectManager, Object::particleManager, Object::cameraManager, Object::inputManager);
 				SetStateOn(EnemyStates::ATTACK);
 				attackDelay = 0.f;
 			}

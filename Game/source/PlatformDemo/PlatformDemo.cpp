@@ -18,7 +18,7 @@
 
 void PlatformDemo::Init()
 {
-	platformDemoSystem = new PlatformDemoSystem();
+	platformDemoSystem = new PlatformDemoSystem(spriteManager, objectManager, particleManager, cameraManager, inputManager);
 	platformDemoSystem->Init();
 
 	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/train_editor.png", "train_editor");
@@ -29,9 +29,9 @@ void PlatformDemo::Init()
 	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/TrainSide.png", "trainSide");
 
 	platformDemoSystem->LoadLevelData("../Game/assets/PlatformDemo/Stage.txt");
-	GameState::objectManager->AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem);
-	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL);
-	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP);
+	GameState::objectManager->AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem, spriteManager, objectManager, particleManager, cameraManager, inputManager);
+	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL, spriteManager, objectManager, particleManager, cameraManager, inputManager);
+	GameState::objectManager->AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP, spriteManager, objectManager, particleManager, cameraManager, inputManager);
 	platformDemoSystem->InitHealthBar();
 }
 

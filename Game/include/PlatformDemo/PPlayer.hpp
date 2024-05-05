@@ -19,8 +19,8 @@ class PPlayer : public Object
 {
 public:
 	PPlayer() = default;
-	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectType);
-	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys);
+	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectType, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_);
+	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_);
 	~PPlayer() { End(); }
 
 	void Init() override;
