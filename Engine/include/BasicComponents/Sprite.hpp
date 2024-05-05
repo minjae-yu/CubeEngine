@@ -18,12 +18,12 @@ class CameraManager;
 class Sprite : public Component
 {
 public:
-	Sprite(SpriteManager* spriteManager_, CameraManager* cameraManager_) : Component(ComponentTypes::SPRITE), spriteManager(spriteManager_), cameraManager(cameraManager_){ Init(); };
+	Sprite() : Component(ComponentTypes::SPRITE) { Init(); };
 	~Sprite() override;
-	
+
 	void Init() override;
 	void Update(float dt) override;
-    void End() override;
+	void End() override;
 
 	//Update Matrices
 	void UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle);
@@ -53,6 +53,12 @@ public:
 	void SetMaterialId(int index) { materialId = index; }
 	void AddSpriteToManager();
 	void SetColor(glm::vec4 color);
+
+	void SetManagers(SpriteManager* spriteManager_, CameraManager* cameraManager_)
+	{
+		spriteManager = spriteManager_;
+		cameraManager = cameraManager_;
+	}
 private:
 	//Animation
 	glm::vec2 GetFrameTexel(int frameNum) const;

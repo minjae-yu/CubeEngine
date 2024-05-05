@@ -21,6 +21,23 @@ public:
 	int GetBallNum() { return ballNum; }
 
 	void SetPlayerBall(Object* obj);
+
+	void SetManagers(SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
+	{
+		spriteManager = spriteManager_;
+		objectManager = objectManager_;
+		particleManager = particleManager_;
+		cameraManager = cameraManager_;
+		inputManager = inputManager_;
+	}
+	void EndManagers()
+	{
+		spriteManager = nullptr;
+		objectManager = nullptr;
+		particleManager = nullptr;
+		cameraManager = nullptr;
+		inputManager = nullptr;
+	}
 private:
 	Sprite* cursor = nullptr;
 	Sprite* powerMeter = nullptr;
@@ -38,4 +55,10 @@ private:
 	int ballNum = 0;
 	bool isShot = false;
 	bool isIncrease = true;
+
+	SpriteManager* spriteManager = nullptr;
+	ObjectManager* objectManager = nullptr;
+	ParticleManager* particleManager = nullptr;
+	CameraManager* cameraManager = nullptr;
+	InputManager* inputManager = nullptr;
 };

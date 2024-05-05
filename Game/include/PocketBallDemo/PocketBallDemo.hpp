@@ -20,7 +20,6 @@ public:
 #endif
 	void Restart() override;
 	void End() override;
-
 private:
 	PocketBallSystem* pocketBallSystem = nullptr;
 	int ballAmount = 0;

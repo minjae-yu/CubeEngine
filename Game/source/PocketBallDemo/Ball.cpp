@@ -13,7 +13,7 @@ Ball::Ball(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectT
 {
 }
 
-Ball::Ball(glm::vec3 pos_, glm::vec3 size_, std::string name, BallType ballType_, PocketBallSystem* sys)
+Ball::Ball(glm::vec3 pos_, glm::vec3 size_, std::string name, BallType ballType_, PocketBallSystem* sys, SpriteManager* spriteManager_, CameraManager* cameraManager_)
 	: Object(pos_, size_, name, ObjectType::BALL)
 {
 	ballType = ballType_;
@@ -21,10 +21,12 @@ Ball::Ball(glm::vec3 pos_, glm::vec3 size_, std::string name, BallType ballType_
 	{
 	case BallType::WHITE:
 		AddComponent<Sprite>();
+		GetComponent<Sprite>()->SetManagers(spriteManager_, cameraManager_);
 		GetComponent<Sprite>()->AddMeshWithTexture(name);
 		break;
 	case BallType::OTHER:
 		AddComponent<Sprite>();
+		GetComponent<Sprite>()->SetManagers(spriteManager_, cameraManager_);
 		GetComponent<Sprite>()->AddMeshWithTexture(name);
 		break;
 	}
@@ -77,10 +79,10 @@ void Ball::CollideObject(Object* obj)
 			float speedX = (float)(rand() % (15 - (-30) + 1) - 15);
 			float speedY = (float)(rand() % (15 - (-30) + 1) - 15);
 
-			Engine::GetParticleManager().AddRandomParticle({ x,y,0.f }, { 4.f,4.f,0.f }, { speedX,speedY,0.f }, 0.f, static_cast<float>(time), amount,
+			Object::particleManager->AddRandomParticle({ x,y,0.f }, { 4.f,4.f,0.f }, { speedX,speedY,0.f }, 0.f, static_cast<float>(time), amount,
 				{ static_cast<float>(colorR * 0.1f),static_cast<float>(colorG * 0.1f),static_cast<float>(colorB * 0.1f),static_cast<float>(colorA * 0.1f) });
 
-			Engine::GetObjectManager().Destroy(Object::id);
+			Object::objectManager->Destroy(Object::id);
 			pocketBallSystem->SetBallNum(pocketBallSystem->GetBallNum() - 1);
 		}
 		break;

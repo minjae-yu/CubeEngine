@@ -30,8 +30,8 @@ GameStateManager::~GameStateManager()
 
 void GameStateManager::LevelInit()
 {
-	levelList.at(static_cast<int>(currentLevel))->Init();
 	levelList.at(static_cast<int>(currentLevel))->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager, soundManager, this);
+	levelList.at(static_cast<int>(currentLevel))->Init();
 
 	if (state != State::CHANGE)
 		levelSelected = currentLevel;

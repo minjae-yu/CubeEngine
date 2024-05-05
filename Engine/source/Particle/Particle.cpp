@@ -20,18 +20,21 @@ Particle::Particle(SpriteManager* spriteManager_, CameraManager* cameraManager_,
 	switch (particleType)
 	{
 	case ParticleType::ANIMESPRI:
-		sprite = new Sprite(spriteManager_, cameraManager_);
+		sprite = new Sprite();
+		sprite->SetManagers(spriteManager_, cameraManager_);
 		sprite->LoadAnimation(spriteName, spriteName);
 		sprite->SetColor(color);
 		sprite->PlayAnimation(0);
 		break;
 	case ParticleType::SPRI:
-		sprite = new Sprite(spriteManager_, cameraManager_);
+		sprite = new Sprite();
+		sprite->SetManagers(spriteManager_, cameraManager_);
 		sprite->AddMeshWithTexel(spriteName);
 		sprite->SetColor(color);
 		break;
 	case ParticleType::REC:
-		sprite = new Sprite(spriteManager_, cameraManager_);
+		sprite = new Sprite();
+		sprite->SetManagers(spriteManager_, cameraManager_);
 		sprite->AddQuad(color);
 		break;
 	}
