@@ -9,13 +9,14 @@
 #include "glm/glm.hpp"
 #include "Component.hpp"
 
+class Engine;
 class Object
 {
 public:
 	Object() = default;
 	Object(glm::vec3 pos_, glm::vec3 size_, std::string name = "", ObjectType objectType = ObjectType::NONE);
 	Object(const Object& rhs);
-	~Object() { DestroyAllComponents(); };
+	~Object() { DestroyAllComponents(); engine = nullptr;};
 	virtual void Init();
 	virtual void Update(float dt);
 	virtual void Draw(float dt);
@@ -65,6 +66,19 @@ public:
 		}
 		ComponentTypes* componentType = new ComponentTypes();
 		dynamic_cast<Component*>(componentType)->SetOwner(this);
+		dynamic_cast<Component*>(componentType)->SetEngine(engine);
+		this->componentList.push_back(std::move(componentType));
+	}
+
+	template<typename ComponentTypes> constexpr void AddComponent(Engine* engine_)
+	{
+		if (HasComponent<ComponentTypes>())
+		{
+			return;
+		}
+		ComponentTypes* componentType = new ComponentTypes();
+		dynamic_cast<Component*>(componentType)->SetOwner(this);
+		dynamic_cast<Component*>(componentType)->SetEngine(engine_);
 		this->componentList.push_back(std::move(componentType));
 	}
 
@@ -111,6 +125,8 @@ public:
 	//	return nullptr;
 	//}
 
+	void SetEngine(Engine* engine_) { engine = engine_; }
+	Engine* GetEngine() { return engine; }
 protected:
 	void DestroyAllComponents();
 
@@ -125,4 +141,6 @@ protected:
 	std::string objectName = "";
 	bool isDrawAble = true;
 	std::vector<Component*> componentList;
+
+	Engine* engine = nullptr;
 };

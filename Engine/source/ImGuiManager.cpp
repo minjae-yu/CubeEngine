@@ -11,12 +11,13 @@
 #include "Window.hpp"
 #include "Engine.hpp"
 
-ImGuiManager::ImGuiManager(VkCommandPool* cpool_, std::array<VkCommandBuffer, 2>* cbuffers_, VkDescriptorPool* dpool_, VkRenderPass* pass_)
+ImGuiManager::ImGuiManager(VkCommandPool* cpool_, std::array<VkCommandBuffer, 2>* cbuffers_, VkDescriptorPool* dpool_, VkRenderPass* pass_, Engine* engine_)
 {
 	vkCommandPool = *cpool_;
 	vkCommandBuffers = *cbuffers_;
 	vkDescriptorPool = *dpool_;
 	renderPass = *pass_;
+	engine = engine_;
 
 	Initialize();
 }
@@ -24,6 +25,7 @@ ImGuiManager::ImGuiManager(VkCommandPool* cpool_, std::array<VkCommandBuffer, 2>
 ImGuiManager::~ImGuiManager()
 {
 	Shutdown();
+	engine = nullptr;
 }
 
 void ImGuiManager::Initialize()
@@ -33,14 +35,14 @@ void ImGuiManager::Initialize()
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 
-	ImGui_ImplSDL2_InitForVulkan(Engine::GetWindow().GetWindow());
+	ImGui_ImplSDL2_InitForVulkan(engine->GetWindow().GetWindow());
 
 	ImGui_ImplVulkan_InitInfo initInfo{};
-	initInfo.Instance = *Engine::Instance().GetVKInit().GetInstance();
-	initInfo.PhysicalDevice = *Engine::Instance().GetVKInit().GetPhysicalDevice();
-	initInfo.Device = *Engine::Instance().GetVKInit().GetDevice();
-	initInfo.Queue = *Engine::Instance().GetVKInit().GetQueue();
-	initInfo.QueueFamily = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
+	initInfo.Instance = *engine->GetVKInit().GetInstance();
+	initInfo.PhysicalDevice = *engine->GetVKInit().GetPhysicalDevice();
+	initInfo.Device = *engine->GetVKInit().GetDevice();
+	initInfo.Queue = *engine->GetVKInit().GetQueue();
+	initInfo.QueueFamily = *engine->GetVKInit().GetQueueFamilyIndex();
 	initInfo.PipelineCache = VK_NULL_HANDLE;
 	initInfo.DescriptorPool = vkDescriptorPool;
 	initInfo.MinImageCount = 2;
@@ -70,7 +72,7 @@ void ImGuiManager::Initialize()
 		try
 		{
 			VkResult result{ VK_SUCCESS };
-			result = vkAllocateCommandBuffers(*Engine::Instance().GetVKInit().GetDevice(), &allocateInfo, &commandBuffer);
+			result = vkAllocateCommandBuffers(*engine->GetVKInit().GetDevice(), &allocateInfo, &commandBuffer);
 			if (result != VK_SUCCESS)
 			{
 				switch (result)
@@ -108,10 +110,10 @@ void ImGuiManager::Initialize()
 		submitInfo.pCommandBuffers = &commandBuffer;
 
 		//Submit Queue to Command Buffer
-		vkQueueSubmit(*Engine::Instance().GetVKInit().GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueSubmit(*engine->GetVKInit().GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 
 		//Wait until all submitted command buffers are handled
-		vkDeviceWaitIdle(*Engine::Instance().GetVKInit().GetDevice());
+		vkDeviceWaitIdle(*engine->GetVKInit().GetDevice());
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
@@ -141,4 +143,6 @@ void ImGuiManager::Shutdown()
 	ImGui_ImplVulkan_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+
+	engine = nullptr;
 }

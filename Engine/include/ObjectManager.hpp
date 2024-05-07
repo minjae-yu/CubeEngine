@@ -10,11 +10,12 @@
 #include <vector>
 #include <iostream>
 
+class Engine;
 class ObjectManager
 {
 public:
     ObjectManager()  = default;
-    ~ObjectManager() = default;
+    ~ObjectManager() { engine = nullptr; }
 
 	void Update(float dt);
     void End();
@@ -28,6 +29,7 @@ public:
 
         objectMap[lastObjectID] = std::unique_ptr<T>(std::make_unique<T>(std::forward<Args>(args)...));;
         objectMap[lastObjectID].get()->SetId(lastObjectID);
+        objectMap[lastObjectID].get()->SetEngine(engine);
         ++lastObjectID;
         //return static_cast<T&>(*objectMap[lastObjectID - 1].get());
     }
@@ -42,8 +44,12 @@ public:
     Object* FindObjectWithName(std::string name);
     Object* FindObjectWithId(int id) { return objectMap.at(id).get(); }
     Object* GetLastObject() { return objectMap.at(lastObjectID - 1).get(); }
+
+    void SetEngine(Engine* engine_) { engine = engine_; }
 private:
     int                                    lastObjectID = 0;
     std::map<int, std::unique_ptr<Object>> objectMap;
     std::vector<int>                       objectsToBeDeleted; // list of object id to be deleted
+
+    Engine* engine = nullptr;
 };

@@ -19,10 +19,10 @@ PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType o
 {
 }
 
-PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys)
+PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys, Engine* engine_)
 	: Object(pos_, size_, name, ObjectType::PLAYER)
 {
-	AddComponent<Sprite>();
+	AddComponent<Sprite>(engine_);
 	GetComponent<Sprite>()->LoadAnimation("../Game/assets/PlatformDemo/player.spt", "Player");
 
 	AddComponent<Physics2D>();
@@ -70,8 +70,8 @@ void PPlayer::Update(float dt)
 void PPlayer::End()
 {
 	platformDemoSystem = nullptr;
-	Engine::GetParticleManager().Clear();
-	Engine::GetObjectManager().DestroyAllObjects();
+	engine->GetParticleManager().Clear();
+	engine->GetObjectManager().DestroyAllObjects();
 }
 
 void PPlayer::CollideObject(Object* obj)
@@ -90,7 +90,7 @@ void PPlayer::CollideObject(Object* obj)
 			platformDemoSystem->HpDecrease(b->GetDamage());
 			SetInvincibleState(true);
 
-			Engine::GetObjectManager().Destroy(b->GetId());
+			engine->GetObjectManager().Destroy(b->GetId());
 			b = nullptr;
 		}
 		break;
@@ -99,13 +99,13 @@ void PPlayer::CollideObject(Object* obj)
 
 void PPlayer::Control(float /*dt*/)
 {
-	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::DOWN))
+	if (engine->GetInputManager().IsKeyPressed(KEYBOARDKEYS::DOWN))
 	{
 	}
-	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::UP))
+	if (engine->GetInputManager().IsKeyPressed(KEYBOARDKEYS::UP))
 	{
 	}
-	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::LEFT))
+	if (engine->GetInputManager().IsKeyPressed(KEYBOARDKEYS::LEFT))
 	{
 		if (IsStateOn(PlayerStates::DIRECTION) == true)
 		{
@@ -114,7 +114,7 @@ void PPlayer::Control(float /*dt*/)
 		SetStateOff(PlayerStates::DIRECTION);
 		GetComponent<Physics2D>()->AddForceX(-20.f);
 	}
-	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::RIGHT))
+	if (engine->GetInputManager().IsKeyPressed(KEYBOARDKEYS::RIGHT))
 	{
 		if (IsStateOn(PlayerStates::DIRECTION) == false)
 		{
@@ -123,13 +123,13 @@ void PPlayer::Control(float /*dt*/)
 		SetStateOn(PlayerStates::DIRECTION);
 		GetComponent<Physics2D>()->AddForceX(20.f);
 	}
-	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::X)
+	if (engine->GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::X)
 		&& IsStateOn(PlayerStates::FALLING) == false && IsStateOn(PlayerStates::JUMPING) == false)
 	{
 		Object::SetYPosition(Object::GetPosition().y + 1.f);
 		GetComponent<Physics2D>()->SetVelocityY(40.f);
 	}
-	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::Z))
+	if (engine->GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::Z))
 	{
 		if (canAttack == true)
 		{
@@ -138,14 +138,14 @@ void PPlayer::Control(float /*dt*/)
 				canAttack = false;
 			}
 
-			Engine::GetObjectManager().AddObject<PBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "Bullet");
+			engine->GetObjectManager().AddObject<PBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "Bullet", engine);
 			if (IsStateOn(PlayerStates::DIRECTION))
 			{
-				Engine::GetObjectManager().GetLastObject()->SetXSpeed(1000.f);
+				engine->GetObjectManager().GetLastObject()->SetXSpeed(1000.f);
 			}
 			else
 			{
-				Engine::GetObjectManager().GetLastObject()->SetXSpeed(-1000.f);
+				engine->GetObjectManager().GetLastObject()->SetXSpeed(-1000.f);
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 #include "BasicComponents/Physics2D.hpp"
 #include "Engine.hpp"
 
-PBullet::PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name)
+PBullet::PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name, Engine* engine)
 	: Object(pos_, size_, name, ObjectType::BULLET)
 {
 	Init();
@@ -14,7 +14,7 @@ PBullet::PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name)
 	GetComponent<Physics2D>()->AddCollidePolygonAABB(size_ / 2.f);
 	GetComponent<Physics2D>()->SetGhostCollision(true);
 
-	AddComponent<Sprite>();
+	AddComponent<Sprite>(engine);
 	GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,1.f });
 }
 
@@ -29,9 +29,9 @@ void PBullet::Update(float dt)
 	position.x += speed.x * dt;
 	position.y += speed.y * dt;
 
-	if (Engine::GetCameraManager().IsInCamera(this) == false)
+	if (engine->GetCameraManager().IsInCamera(this) == false)
 	{
-		Engine::GetObjectManager().Destroy(Object::id);
+		engine->GetObjectManager().Destroy(Object::id);
 	}
 }
 

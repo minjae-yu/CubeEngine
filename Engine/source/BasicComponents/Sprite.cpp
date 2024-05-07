@@ -17,8 +17,10 @@ Sprite::~Sprite()
 	animations.clear();
 	if (this != nullptr)
 	{
-		Engine::GetSpriteManager().DeleteSprite(this);
+		engine->GetSpriteManager().DeleteSprite(this);
 	}
+
+	engine = nullptr;
 }
 
 void Sprite::Init()
@@ -36,7 +38,7 @@ void Sprite::Update(float dt)
 
 void Sprite::End()
 {
-	Engine::GetSpriteManager().DeleteSprite(this);
+	engine->GetSpriteManager().DeleteSprite(this);
 }
 
 void Sprite::UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle)
@@ -47,48 +49,48 @@ void Sprite::UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle)
 		glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(size_.x, size_.y, size_.z));
 
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).model = modelMatrix;
+	engine->GetVKRenderManager().GetVertexVector()->at(materialId).model = modelMatrix;
 }
 
 void Sprite::UpdateView()
 {
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).view = Engine::GetCameraManager().GetViewMatrix();
+	engine->GetVKRenderManager().GetVertexVector()->at(materialId).view = engine->GetCameraManager().GetViewMatrix();
 }
 
 void Sprite::UpdateProjection()
 {
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).projection = Engine::GetCameraManager().GetProjectionMatrix();
+	engine->GetVKRenderManager().GetVertexVector()->at(materialId).projection = engine->GetCameraManager().GetProjectionMatrix();
 }
 
 void Sprite::AddQuad(glm::vec4 color_)
 {
-	Engine::Instance().GetVKRenderManager().LoadQuad(color_, 0.f, 0.f);
-	materialId = static_cast<int>(Engine::Instance().GetVKRenderManager().GetVertexVector()->size() - 1);
+	engine->GetVKRenderManager().LoadQuad(color_, 0.f, 0.f);
+	materialId = static_cast<int>(engine->GetVKRenderManager().GetVertexVector()->size() - 1);
 	AddSpriteToManager();
 }
 
 void Sprite::AddQuadLine(glm::vec4 color_)
 {
-	Engine::Instance().GetVKRenderManager().LoadLineQuad(color_);
-	materialId = static_cast<int>(Engine::Instance().GetVKRenderManager().GetVertexVector()->size() - 1);
+	engine->GetVKRenderManager().LoadLineQuad(color_);
+	materialId = static_cast<int>(engine->GetVKRenderManager().GetVertexVector()->size() - 1);
 	AddSpriteToManager();
 }
 
 void Sprite::AddMeshWithTexture(std::string name_, glm::vec4 color_)
 {
-	Engine::Instance().GetVKRenderManager().LoadQuad(color_, 1.f, 0.f);
-	materialId = static_cast<int>(Engine::Instance().GetVKRenderManager().GetVertexVector()->size() - 1);
+	engine->GetVKRenderManager().LoadQuad(color_, 1.f, 0.f);
+	materialId = static_cast<int>(engine->GetVKRenderManager().GetVertexVector()->size() - 1);
 	ChangeTexture(name_);
-	textureSize = Engine::Instance().GetVKRenderManager().GetTexture(name_)->GetSize();
+	textureSize = engine->GetVKRenderManager().GetTexture(name_)->GetSize();
 	AddSpriteToManager();
 }
 
 void Sprite::AddMeshWithTexel(std::string name_, glm::vec4 color_)
 {
-	Engine::Instance().GetVKRenderManager().LoadQuad(color_, 1.f, 1.f);
-	materialId = static_cast<int>(Engine::Instance().GetVKRenderManager().GetVertexVector()->size() - 1);
+	engine->GetVKRenderManager().LoadQuad(color_, 1.f, 1.f);
+	materialId = static_cast<int>(engine->GetVKRenderManager().GetVertexVector()->size() - 1);
 	ChangeTexture(name_);
-	textureSize = Engine::Instance().GetVKRenderManager().GetTexture(name_)->GetSize();
+	textureSize = engine->GetVKRenderManager().GetTexture(name_)->GetSize();
 	AddSpriteToManager();
 }
 
@@ -111,9 +113,9 @@ void Sprite::LoadAnimation(const std::filesystem::path& spriteInfoFile, std::str
 
 	std::string text;
 	inFile >> text;
-	//texturePtr = Engine::GetTextureManager().Load(text, true);
+	//texturePtr = engine->GetTextureManager().Load(text, true);
 	//frameSize = texturePtr->GetSize();
-	Engine::Instance().GetVKRenderManager().LoadTexture(text, name);
+	engine->GetVKRenderManager().LoadTexture(text, name);
 	AddMeshWithTexel(name);
 
 	inFile >> text;
@@ -158,7 +160,7 @@ void Sprite::LoadAnimation(const std::filesystem::path& spriteInfoFile, std::str
 		//	inFile >> rect.point1.x >> rect.point1.y >> rect.point2.x >> rect.point2.y;
 		//	if (object == nullptr)
 		//	{
-		//		Engine::GetLogger().LogError("Trying to add collision to a nullobject");
+		//		engine->GetLogger().LogError("Trying to add collision to a nullobject");
 		//	}
 		//	else
 		//	{
@@ -171,7 +173,7 @@ void Sprite::LoadAnimation(const std::filesystem::path& spriteInfoFile, std::str
 		//	inFile >> radius;
 		//	if (object == nullptr)
 		//	{
-		//		Engine::GetLogger().LogError("Trying to add collision to a nullobject");
+		//		engine->GetLogger().LogError("Trying to add collision to a nullobject");
 		//	}
 		//	else
 		//	{
@@ -180,7 +182,7 @@ void Sprite::LoadAnimation(const std::filesystem::path& spriteInfoFile, std::str
 		//}
 		else
 		{
-			//Engine::GetLogger().LogError("Unknown spt command " + text);
+			//engine->GetLogger().LogError("Unknown spt command " + text);
 		}
 		inFile >> text;
 	}
@@ -201,7 +203,7 @@ glm::vec2 Sprite::GetHotSpot(int index)
 {
 	if (index < 0 || hotSpotList.size() <= index)
 	{
-		//Engine::GetLogger().LogError("Cannot find a hotspot of current index!");
+		//engine->GetLogger().LogError("Cannot find a hotspot of current index!");
 		return glm::vec2{ 0,0 };
 	}
 	return hotSpotList[index];
@@ -211,7 +213,7 @@ void Sprite::PlayAnimation(int anim)
 {
 	if (anim < 0 || animations.size() <= anim)
 	{
-		//Engine::GetLogger().LogError(std::to_string(anim) + " is out of index!");
+		//engine->GetLogger().LogError(std::to_string(anim) + " is out of index!");
 		currAnim = 0;
 	}
 	else
@@ -226,39 +228,39 @@ void Sprite::UpdateAnimation(float dt)
 	if (animations.empty() == false && currAnim >= 0 && !animations[currAnim]->IsAnimationDone())
 	{
 		animations[currAnim]->Update(dt);
-		Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).frameSize = glm::vec4(GetFrameSize() / textureSize, 0.f, 0.f);
-		Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).texelPos = glm::vec4(GetFrameTexel(animations[currAnim]->GetDisplayFrame()) / textureSize, 0.f, 0.f);
+		engine->GetVKRenderManager().GetVertexVector()->at(materialId).frameSize = glm::vec4(GetFrameSize() / textureSize, 0.f, 0.f);
+		engine->GetVKRenderManager().GetVertexVector()->at(materialId).texelPos = glm::vec4(GetFrameTexel(animations[currAnim]->GetDisplayFrame()) / textureSize, 0.f, 0.f);
 	}
 }
 
 void Sprite::ChangeTexture(std::string name)
 {
-	if (Engine::Instance().GetVKRenderManager().GetTexture(name) != nullptr)
+	if (engine->GetVKRenderManager().GetTexture(name) != nullptr)
 	{
-		Engine::Instance().GetVKRenderManager().GetFragmentVector()->at(materialId).texIndex = Engine::Instance().GetVKRenderManager().GetTexture(name)->GetTextrueId();
-		Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).isTex = true;
+		engine->GetVKRenderManager().GetFragmentVector()->at(materialId).texIndex = engine->GetVKRenderManager().GetTexture(name)->GetTextrueId();
+		engine->GetVKRenderManager().GetVertexVector()->at(materialId).isTex = true;
 	}
 	else
 	{
-		Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).isTex = false;
+		engine->GetVKRenderManager().GetVertexVector()->at(materialId).isTex = false;
 	}
 }
 
 void Sprite::AddSpriteToManager()
 {
-	Engine::GetSpriteManager().AddSprite(this);
+	engine->GetSpriteManager().AddSprite(this);
 }
 
 void Sprite::SetColor(glm::vec4 color)
 {
-	Engine::Instance().GetVKRenderManager().GetVertexVector()->at(materialId).color = color;
+	engine->GetVKRenderManager().GetVertexVector()->at(materialId).color = color;
 }
 
 glm::vec2 Sprite::GetFrameTexel(int frameNum) const
 {
 	if (frameNum < 0 || frameTexel.size() <= frameNum)
 	{
-		//Engine::GetLogger().LogError(std::to_string(frameNum) + " is out of index!");
+		//engine->GetLogger().LogError(std::to_string(frameNum) + " is out of index!");
 		return glm::vec2{ 0,0 };
 	}
 	else

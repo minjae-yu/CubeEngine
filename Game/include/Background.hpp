@@ -33,11 +33,12 @@ struct Background
 	Sprite* sprite;
 };
 
+class Engine;
 class BackgroundManager
 {
 public:
-	BackgroundManager() = default;
-	~BackgroundManager() { Clear(); }
+	BackgroundManager(Engine* engine_) { engine = engine_; }
+	~BackgroundManager() { Clear(); engine = nullptr;}
 
 	void AddNormalBackground(std::string spriteName_, glm::vec2 position_, glm::vec2 size_, float angle_ = 0.f, glm::vec2 speed_ = { 0.f,0.f }, glm::vec2 sizeIncrements_ = { 0.f,0.f }, float depth_ = -1.f, bool isScrolled_ = true, bool isAnimated = false);
 
@@ -54,6 +55,9 @@ public:
 	std::map<std::string, std::vector<Background>>  GetVerticalParallaxBackgroundList() { return verticalParallaxBackgroundList; }
 
 	std::map<std::string, std::vector<Background>>& GetSaveBackgroundList() { return saveBackgroundList; }
+
+	bool isInOfCamera(Background& back);
+	bool isInOfCameraE(Background& back);
 private:
 	std::vector<Background> normalBackgroundList;
 	std::map<std::string, std::vector<Background>> verticalParallaxBackgroundList;
@@ -61,4 +65,6 @@ private:
 	std::map<std::string, std::vector<Background>> saveBackgroundList;
 
 	bool isEditorMod = false;
+
+	Engine* engine = nullptr;
 };

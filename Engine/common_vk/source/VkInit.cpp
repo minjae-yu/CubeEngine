@@ -19,16 +19,20 @@ VKInit::~VKInit()
 	vkDestroyDevice(vkDevice, nullptr);
 	//Destroy Instance
 	vkDestroyInstance(vkInstance, nullptr);
+
+	engine = nullptr;
 }
 
-void VKInit::Initialize()
+void VKInit::Initialize(Engine* engine_)
 {
+	engine = engine_;
+
 	InitInstance();
 	SetPhysicalDevice();
 	SetQueueFamilyIndex();
 	InitDevice();
 	InitQueue();
-	InitSurface();
+	InitSurface(engine->GetWindow().GetWindow());
 
 	SetSurfaceFormat();
 }
@@ -88,11 +92,11 @@ void VKInit::SetPhysicalDevice()
 
 	//Set proper physical device
 	PrintPhysicalDevices();
-	std::cout << "Input GPU number: ";
+	/*std::cout << "Input GPU number: ";
 	int deviceNumber{ 0 };
 	std::cin >> deviceNumber;
-	std::cout << std::endl;
-	vkPhysicalDevice = physicalDevices[deviceNumber];
+	std::cout << std::endl;*/
+	vkPhysicalDevice = physicalDevices[0];
 	//vkPhysicalDevice = GetRequiredDevice(physicalDevices, isDiscrete);
 }
 
@@ -214,7 +218,7 @@ void VKInit::InitQueue()
 	vkGetDeviceQueue(vkDevice, queueFamilyIndex, 0, &vkQueue);
 }
 
-void VKInit::InitSurface()
+void VKInit::InitSurface(SDL_Window* window)
 {
 	try
 	{
@@ -233,7 +237,7 @@ void VKInit::InitSurface()
 		//}
 
 		//Create sruface using SDL_Vulkan_CreateSurface function
-		if (SDL_Vulkan_CreateSurface(Engine::Instance().GetWindow().GetWindow(), vkInstance, &vkSurface) == SDL_FALSE)
+		if (SDL_Vulkan_CreateSurface(window, vkInstance, &vkSurface) == SDL_FALSE)
 		{
 			throw std::runtime_error{ "vkSurface Creation Failed" };
 		}

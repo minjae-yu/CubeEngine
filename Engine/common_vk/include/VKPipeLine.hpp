@@ -13,14 +13,14 @@ constexpr enum class POLYGON_MODE
 class VKPipeLine
 {
 public:
-	VKPipeLine(std::vector<VkDescriptorSetLayout>* layout_);
+	VKPipeLine(VkDevice* device_, std::vector<VkDescriptorSetLayout>* layout_);
 	~VKPipeLine();
 	void InitPipeLine(VkShaderModule* vertexModule, VkShaderModule* fragmentModule, VkExtent2D* swapchainImageExtent, VkRenderPass* renderPass, POLYGON_MODE mode_);
 
 	VkPipeline* GetPipeLine() { return &vkPipeline; };
 	VkPipelineLayout* GetPipeLineLayout() { return &vkPipelineLayout; };
 private:
-	VkDevice* device;
+	VkDevice* device = nullptr;
 	void InitPipeLineLayout();
 
 	VkPipeline vkPipeline{ VK_NULL_HANDLE };

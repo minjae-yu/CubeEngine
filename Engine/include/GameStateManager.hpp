@@ -26,6 +26,7 @@ public:
 	void LevelInit(GameLevel currentLevel_);
 	void Update(float dt);
 	void Draw();
+	void End();
     void LevelEnd();
 	
 	void AddLevel(GameState* level);
@@ -36,6 +37,8 @@ public:
 
 	void SetGameState(State state_) { state = state_; }
 	State GetGameState() { return state; }
+
+	void SetEngine(Engine* engine_) { engine = engine_; }
 #ifdef _DEBUG
 	void StateChanger();
 	void DrawWithImGui(float dt);
@@ -51,4 +54,6 @@ private:
 	GameLevel levelSelected = GameLevel::NONE;
 	std::vector<GameState*> levelList;
 	State state = State::START;
+
+	Engine* engine = nullptr;
 };

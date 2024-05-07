@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 
+class Engine;
 class SpriteManager
 {
 public:
@@ -18,6 +19,10 @@ public:
 
     void AddSprite(Sprite* sprite_);
     void DeleteSprite(Sprite* sprite_);
+
+    void SetEngine(Engine* engine_) { engine = engine_; }
 private:
     std::vector<Sprite*>  sprites;
+
+    Engine* engine = nullptr;
 };

@@ -13,10 +13,12 @@
 
 struct Vertex;
 
+class Engine;
 class Sprite : public Component
 {
 public:
-	Sprite() : Component(ComponentTypes::SPRITE) { Init(); };
+	Sprite() : Component(ComponentTypes::SPRITE) {};
+	Sprite(Engine* engine_) : Component(ComponentTypes::SPRITE) { SetEngine(engine_); }
 	~Sprite() override;
 	
 	void Init() override;
@@ -51,6 +53,7 @@ public:
 	void SetMaterialId(int index) { materialId = index; }
 	void AddSpriteToManager();
 	void SetColor(glm::vec4 color);
+
 private:
 	//Animation
 	glm::vec2 GetFrameTexel(int frameNum) const;

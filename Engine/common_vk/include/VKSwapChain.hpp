@@ -11,7 +11,7 @@ class VKInit;
 class VKSwapChain
 {
 public:
-	VKSwapChain(VkCommandPool* pool_);
+	VKSwapChain(VKInit* vkInit_, VkCommandPool* pool_);
 	~VKSwapChain();
 
 	VkSwapchainKHR* GetSwapChain() { return &vkSwapChain; };

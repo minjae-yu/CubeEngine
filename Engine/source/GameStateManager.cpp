@@ -14,11 +14,7 @@ GameStateManager::GameStateManager()
 
 GameStateManager::~GameStateManager()
 {
-	for (auto& lev : levelList)
-	{
-		delete lev;
-	}
-	levelList.clear();
+	End();
 }
 
 void GameStateManager::LevelInit()
@@ -71,13 +67,13 @@ void GameStateManager::Update(float dt)
 		else
 		{
 			levelList.at(static_cast<int>(currentLevel))->Update(dt);
-			Engine::GetSpriteManager().Update(dt);
-			Engine::GetObjectManager().Update(dt);
-			Engine::GetParticleManager().Update(dt);
-			Engine::GetCameraManager().Update();
+			engine->GetSpriteManager().Update(dt);
+			engine->GetObjectManager().Update(dt);
+			engine->GetParticleManager().Update(dt);
+			engine->GetCameraManager().Update();
 			CollideObjects();
 
-			if (!(SDL_GetWindowFlags(Engine::GetWindow().GetWindow()) & SDL_WINDOW_MINIMIZED))
+			if (!(SDL_GetWindowFlags(engine->GetWindow().GetWindow()) & SDL_WINDOW_MINIMIZED))
 			{
 #ifdef _DEBUG
 				DrawWithImGui(dt);
@@ -116,7 +112,7 @@ void GameStateManager::Update(float dt)
 
 void GameStateManager::Draw()
 {
-	VKRenderManager* renderManager = &Engine::Instance().GetVKRenderManager();
+	VKRenderManager* renderManager = &engine->GetVKRenderManager();
 	//if (renderManager->GetMatrices()->size() > 0)
 	//{
 	renderManager->BeginRender();
@@ -127,6 +123,17 @@ void GameStateManager::Draw()
 	//}
 }
 
+void GameStateManager::End()
+{
+	for (auto& lev : levelList)
+	{
+		delete lev;
+	}
+	levelList.clear();
+
+	engine = nullptr;
+}
+
 void GameStateManager::LevelEnd()
 {
 	levelList.at(static_cast<int>(currentLevel))->End();
@@ -135,6 +142,7 @@ void GameStateManager::LevelEnd()
 void GameStateManager::AddLevel(GameState* level)
 {
 	levelList.push_back(level);
+	levelList.back()->SetEngine(engine);
 }
 
 void GameStateManager::ChangeLevel(GameLevel lev)
@@ -170,7 +178,7 @@ void GameStateManager::StateChanger()
 
 void GameStateManager::DrawWithImGui(float dt)
 {
-	VKRenderManager* renderManager = &Engine::Instance().GetVKRenderManager();
+	VKRenderManager* renderManager = &engine->GetVKRenderManager();
 
 	renderManager->BeginRender();
 	if (!renderManager->GetIsRecreated())
@@ -200,9 +208,9 @@ const char* GameStateManager::GameLevelTypeEnumToChar(GameLevel type)
 
 void GameStateManager::CollideObjects()
 {
-	for (auto& target : Engine::GetObjectManager().GetObjectMap())
+	for (auto& target : engine->GetObjectManager().GetObjectMap())
 	{
-		for (auto& object : Engine::GetObjectManager().GetObjectMap())
+		for (auto& object : engine->GetObjectManager().GetObjectMap())
 		{
 			if (target.second != nullptr && object.second != nullptr && target.second != object.second
 				&& target.second->HasComponent<Physics2D>() == true && object.second->HasComponent<Physics2D>() == true)

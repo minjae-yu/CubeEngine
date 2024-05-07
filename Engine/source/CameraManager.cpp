@@ -4,8 +4,9 @@
 #include "CameraManager.hpp"
 #include "Engine.hpp"
 
-void CameraManager::Init(glm::vec2 viewSize, CameraType type, float zoom, float angle)
+void CameraManager::Init(Engine* engine, glm::vec2 viewSize, CameraType type, float zoom, float angle)
 {
+	camera.SetEngine(engine);
 	camera.SetCameraType(type);
 	camera.SetViewSize(static_cast<int>(viewSize.x), static_cast<int>(viewSize.y));
 	camera.SetZoom(zoom);

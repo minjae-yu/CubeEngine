@@ -5,13 +5,14 @@
 #include "ComponentTypes.hpp"
 
 class Object;
+class Engine;
 class Component
 {
 public:
 	friend class Object;
 
 	Component(ComponentTypes type) : componentType(type) {};
-	virtual ~Component() { };
+	virtual ~Component() { engine = nullptr; };
 
 	virtual void Init() = 0;
 	virtual void Update(float dt) = 0;
@@ -21,7 +22,10 @@ public:
 	void SetOwner(Object* owner_) { this->owner = owner_; }
 	ComponentTypes GetType() { return componentType; }
 
+	void SetEngine(Engine* engine_) { engine = engine_; }
 private:
 	Object* owner = nullptr;
 	ComponentTypes componentType;
+protected:
+	Engine* engine = nullptr;
 };

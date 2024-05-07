@@ -18,6 +18,7 @@ SpriteManager::~SpriteManager()
 	//		std::cout << sprites.size() << std::endl;
 	//	}
 	//}
+	End();
 }
 
 void SpriteManager::Update(float /*dt*/)
@@ -31,6 +32,7 @@ void SpriteManager::Update(float /*dt*/)
 
 void SpriteManager::End()
 {
+	engine = nullptr;
 }
 
 void SpriteManager::AddSprite(Sprite* sprite_)
@@ -46,10 +48,10 @@ void SpriteManager::DeleteSprite(Sprite* sprite_)
 		for (auto it = iterator + 1; it != sprites.end(); it++)
 		{
 			(*it)->SetMaterialId((*it)->GetMaterialId() - 1);
-			Engine::Instance().GetVKRenderManager().GetVertexVector()->at((*it)->GetMaterialId()) = Engine::Instance().GetVKRenderManager().GetVertexVector()->at((*it)->GetMaterialId() + 1);
-			Engine::Instance().GetVKRenderManager().GetFragmentVector()->at((*it)->GetMaterialId()) = Engine::Instance().GetVKRenderManager().GetFragmentVector()->at((*it)->GetMaterialId() + 1);
+			engine->GetVKRenderManager().GetVertexVector()->at((*it)->GetMaterialId()) = engine->GetVKRenderManager().GetVertexVector()->at((*it)->GetMaterialId() + 1);
+			engine->GetVKRenderManager().GetFragmentVector()->at((*it)->GetMaterialId()) = engine->GetVKRenderManager().GetFragmentVector()->at((*it)->GetMaterialId() + 1);
 		}
-		Engine::Instance().GetVKRenderManager().DeleteWithIndex();
+		engine->GetVKRenderManager().DeleteWithIndex();
 		sprites.erase(iterator);
 	}
 }

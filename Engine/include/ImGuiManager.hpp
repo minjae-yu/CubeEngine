@@ -14,6 +14,7 @@ class VKInit;
 class VKSwapChain;
 class VKDescriptor;
 class Window;
+class Engine;
 
 class ImGuiManager
 {
@@ -22,7 +23,8 @@ public:
 		VkCommandPool* cpool_,
 		std::array<VkCommandBuffer, 2>* cbuffers_,
 		VkDescriptorPool* dpool_,
-		VkRenderPass* pass_
+		VkRenderPass* pass_,
+		Engine* engine_
 		);
 	~ImGuiManager();
 
@@ -40,4 +42,6 @@ private:
 	std::array<VkCommandBuffer, 2> vkCommandBuffers{ VK_NULL_HANDLE };
 	VkDescriptorPool vkDescriptorPool;
 	VkRenderPass renderPass{ VK_NULL_HANDLE };
+	
+	Engine* engine = nullptr;
 };

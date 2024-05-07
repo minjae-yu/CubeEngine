@@ -153,12 +153,12 @@ enum class KEYBOARDKEYS
 	 MODE = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_MODE),
 };
 
-
+class Engine;
 class InputManager
 {
 public:
 	InputManager() = default;
-	~InputManager() = default;
+	~InputManager() { engine = nullptr; }
 
 	void InputPollEvent(SDL_Event& event);
 
@@ -169,7 +169,7 @@ public:
 	bool IsMouseButtonPressedOnce(MOUSEBUTTON button);
 	glm::vec2 GetMousePosition();
 
-
+	void SetEngine(Engine* engine_) { engine = engine_; }
 protected:
 	void KeyDown(KEYBOARDKEYS keycode)
 	{
@@ -206,4 +206,6 @@ private:
 
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStates;
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStatePrev;
+
+	Engine* engine = nullptr;
 };

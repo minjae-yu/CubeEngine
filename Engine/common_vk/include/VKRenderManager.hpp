@@ -23,13 +23,14 @@ class VKShader;
 class VKPipeLine;
 template<typename Material>
 class VKUniformBuffer;
+class Engine;
 
 class VKRenderManager
 {
 public:
 	VKRenderManager() = default;
 	~VKRenderManager();
-	void Initialize();
+	void Initialize(Engine* engine_);
 
 	void BeginRender();
 	void EndRender();
@@ -110,4 +111,6 @@ private:
 	VKUniformBuffer<FragmentUniform>* uFragment{ nullptr };
 
 	unsigned int quadCount{ 0 };
+
+	Engine* engine = nullptr;
 };

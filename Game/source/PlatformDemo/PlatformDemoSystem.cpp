@@ -119,7 +119,7 @@ void PDemoMapEditorDemo::LoadLevelData(const std::filesystem::path& filePath)
 		{
 			if (isEditorMod == false)
 			{
-				Engine::GetObjectManager().AddObject<PPlayer>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Player", ObjectType::PLAYER);
+				engine->GetObjectManager().AddObject<PPlayer>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Player", ObjectType::PLAYER);
 			}
 			else
 			{
@@ -133,11 +133,11 @@ void PDemoMapEditorDemo::LoadLevelData(const std::filesystem::path& filePath)
 			inStream >> eType;
 			if (isEditorMod == false)
 			{
-				Engine::GetObjectManager().AddObject<PEnemy>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Enemy", static_cast<EnemyType>(eType));
+				engine->GetObjectManager().AddObject<PEnemy>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Enemy", static_cast<EnemyType>(eType), engine);
 			}
 			else
 			{
-				PEnemy* temp = new PEnemy(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Enemy", static_cast<EnemyType>(eType));
+				PEnemy* temp = new PEnemy(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Enemy", static_cast<EnemyType>(eType), engine);
 				objects.push_back(std::move(temp));
 			}
 		}
@@ -145,14 +145,14 @@ void PDemoMapEditorDemo::LoadLevelData(const std::filesystem::path& filePath)
 		{
 			if (isEditorMod == false)
 			{
-				Engine::GetObjectManager().AddObject<Object>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Wall", ObjectType::WALL);
-				Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
-				Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.5f,0.5f,0.5f,1.f });
+				engine->GetObjectManager().AddObject<Object>(glm::vec3{ posX, posY, 0.f }, glm::vec3{ sizeX, sizeY, 0.f }, "Wall", ObjectType::WALL);
+				engine->GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+				engine->GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.5f,0.5f,0.5f,1.f });
 
-				Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
-				Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ Engine::GetObjectManager().GetLastObject()->GetSize().x / 2.f,  Engine::GetObjectManager().GetLastObject()->GetSize().y / 2.f });
-				Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-				Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(1.f);
+				engine->GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+				engine->GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ engine->GetObjectManager().GetLastObject()->GetSize().x / 2.f,  engine->GetObjectManager().GetLastObject()->GetSize().y / 2.f });
+				engine->GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+				engine->GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(1.f);
 			}
 			else
 			{
@@ -320,7 +320,7 @@ void PDemoMapEditorDemo::Init()
 	//if (isEditorMod == true)
 	//{
 	target = new Target();
-	target->rect = new Sprite();
+	target->rect = new Sprite(engine);
 	//target->rect->AddMeshWithTexture("", {0.f,1.f,0.f,1.f});
 	target->rect->AddQuad({ 0.f,1.f,0.f,0.f });
 	//}
@@ -435,7 +435,7 @@ void PDemoMapEditorDemo::ObjectCreator()
 	target->name = newName;
 
 	ImGui::InputFloat2("Position", targetP);
-	glm::vec2 mPos = Engine::GetInputManager().GetMousePosition();
+	glm::vec2 mPos = engine->GetInputManager().GetMousePosition();
 	glm::vec2 newPosition = { mPos.x - std::fmod(mPos.x, gridSize.x),  mPos.y - std::fmod(mPos.y, gridSize.y) };
 	target->pos = newPosition;
 
@@ -449,7 +449,7 @@ void PDemoMapEditorDemo::ObjectCreator()
 	for (auto& obj : objects)
 	{
 		if (!(obj->GetPosition().x + obj->GetSize().x / 2.f < mPos.x || mPos.y < obj->GetPosition().x - obj->GetSize().x / 2.f
-			|| obj->GetPosition().y + obj->GetSize().y / 2.f < mPos.y || mPos.y < obj->GetPosition().y - obj->GetSize().y / 2.f) && Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
+			|| obj->GetPosition().y + obj->GetSize().y / 2.f < mPos.y || mPos.y < obj->GetPosition().y - obj->GetSize().y / 2.f) && engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
 		{
 			delete obj;
 			objects.erase(objects.begin() + id);
@@ -457,18 +457,18 @@ void PDemoMapEditorDemo::ObjectCreator()
 		}
 		id++;
 	}
-	if (Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::MIDDLE))
+	if (engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::MIDDLE))
 	{
 		switch (objectNum)
 		{
 		case 0:
-			objects.push_back(new PPlayer({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Player", pSys));
+			objects.push_back(new PPlayer({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Player", pSys, engine));
 			break;
 		case 1:
-			objects.push_back(new PEnemy({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Enemy", EnemyType::NORMAL));
+			objects.push_back(new PEnemy({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Enemy", EnemyType::NORMAL, engine));
 			break;
 		case 2:
-			objects.push_back(new PEnemy({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Enemy", EnemyType::BIG));
+			objects.push_back(new PEnemy({ target->pos.x, target->pos.y, 0.f }, { target->size.x, target->size.y, 0.f }, "Enemy", EnemyType::BIG, engine));
 			break;
 		}
 	}
@@ -518,7 +518,7 @@ void PDemoMapEditorDemo::BackgroundCreator()
 	}
 
 	ImGui::InputFloat2("Position", targetP);
-	glm::vec2 mPos = Engine::GetInputManager().GetMousePosition();
+	glm::vec2 mPos = engine->GetInputManager().GetMousePosition();
 	glm::vec2 newPosition = { mPos.x - std::fmod(mPos.x, gridSize.x),  -(mPos.y - std::fmod(mPos.y, gridSize.y)) };
 	target->pos = newPosition;
 
@@ -539,7 +539,7 @@ void PDemoMapEditorDemo::BackgroundCreator()
 		for (int i = 0; i < group.second.size(); i++)
 		{
 			if (!(group.second.at(i).position.x + group.second.at(i).size.x < mPos.x || mPos.y < group.second.at(i).position.x - group.second.at(i).size.x
-				|| group.second.at(i).position.y + group.second.at(i).size.y < mPos.y || mPos.y < group.second.at(i).position.y - group.second.at(i).size.y) && Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
+				|| group.second.at(i).position.y + group.second.at(i).size.y < mPos.y || mPos.y < group.second.at(i).position.y - group.second.at(i).size.y) && engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
 			{
 				delete group.second.at(i).sprite;
 				group.second.erase(group.second.begin() + i);
@@ -547,7 +547,7 @@ void PDemoMapEditorDemo::BackgroundCreator()
 			}
 		}
 	}
-	if (Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::MIDDLE))
+	if (engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::MIDDLE))
 	{
 		bgm->AddSaveBackgroundList(target->spriteName, "none", target->backgroundType, target->pos, target->size,
 			0.f, target->speed, { 0.f,0.f }, target->depth, false, target->isAnimation);
@@ -567,20 +567,20 @@ void PDemoMapEditorDemo::WallCreator()
 		glm::vec2 midPoint = { (target->startPos.x + target->endPos.x) / 2.f, (target->startPos.y + target->endPos.y) / 2.f };
 		if (isWallSetting == false)
 		{
-			glm::vec2 mPos = Engine::GetInputManager().GetMousePosition();
+			glm::vec2 mPos = engine->GetInputManager().GetMousePosition();
 			target->startPos = { mPos.x - std::fmod(mPos.x, gridSize.x),  mPos.y - std::fmod(mPos.y, gridSize.y) };
 			target->rect->UpdateModel({ target->startPos.x, -target->startPos.y, 0.f }, { 4.f,4.f,0.f }, 0.f);
 		}
 		else
 		{
-			glm::vec2 mPos = Engine::GetInputManager().GetMousePosition();
+			glm::vec2 mPos = engine->GetInputManager().GetMousePosition();
 			target->endPos = { mPos.x - std::fmod(mPos.x, gridSize.x),  mPos.y - std::fmod(mPos.y, gridSize.y) };
 			target->rect->UpdateModel({ midPoint.x, -midPoint.y, 0.f }, { abs(target->endPos.x - target->startPos.x) , abs(target->endPos.y - target->startPos.y),0.f }, 0.f);
 		}
 		target->rect->UpdateProjection();
 		target->rect->UpdateView();
 
-		if (Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::LEFT))
+		if (engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::LEFT))
 		{
 			if (isWallSetting == true)
 			{
@@ -600,7 +600,7 @@ void PDemoMapEditorDemo::WallCreator()
 				isWallSetting = true;
 			}
 		}
-		else if (Engine::GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
+		else if (engine->GetInputManager().IsMouseButtonPressedOnce(MOUSEBUTTON::RIGHT))
 		{
 			if (isWallSetting == true)
 			{
@@ -613,15 +613,15 @@ void PDemoMapEditorDemo::WallCreator()
 
 void PlatformDemoSystem::Init()
 {
-	mapEditor = new PDemoMapEditorDemo(this);
-	backGroundManager = new BackgroundManager();
+	mapEditor = new PDemoMapEditorDemo(engine, this);
+	backGroundManager = new BackgroundManager(engine);
 	mapEditor->SetBackgroundManager(backGroundManager);
 }
 
 void PlatformDemoSystem::Update(float dt)
 {
-	glm::vec2 viewSize = Engine::GetCameraManager().GetViewSize();
-	glm::vec2 center = Engine::GetCameraManager().GetCenter();
+	glm::vec2 viewSize = engine->GetCameraManager().GetViewSize();
+	glm::vec2 center = engine->GetCameraManager().GetCenter();
 	healthBar->UpdateModel({ (-viewSize.x / 2.f + 320.f) + center.x - (320.f - (320.f * (1.f / maxHp * hp)) / 2.f) , (viewSize.y / 2.f - 128.f) + center.y, 0.f }, { 320.f * (1.f / maxHp * hp), 64.f, 0.f }, 0.f);
 	healthBar->UpdateProjection();
 	healthBar->UpdateView();
@@ -648,7 +648,7 @@ void PlatformDemoSystem::InitHealthBar()
 #ifdef _DEBUG
 	mapEditor->Init();
 #endif
-	healthBar = new Sprite();
+	healthBar = new Sprite(engine);
 	healthBar->AddQuad({ 0.f,1.f,0.f,1.f });
 }
 

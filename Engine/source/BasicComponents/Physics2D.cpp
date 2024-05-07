@@ -12,6 +12,8 @@ Physics2D::~Physics2D()
 		delete v.sprite;
 	}
 	points.clear();
+
+	engine = nullptr;
 #endif
 }
 

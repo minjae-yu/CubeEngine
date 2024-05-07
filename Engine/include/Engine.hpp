@@ -20,17 +20,17 @@ public:
 	Engine() = default;
 	~Engine() = default;
 
-	static Engine& Instance() { static Engine instance; return instance; }
-	static Window& GetWindow() { return Instance().window; }
-	static VKInit& GetVKInit() { return Instance().vkInit; }
-	static VKRenderManager& GetVKRenderManager() { return Instance().vkRenderManager; }
-	static GameStateManager& GetGameStateManager() { return Instance().gameStateManger; }
-	static InputManager& GetInputManager() { return Instance().inputManager; }
-	static ObjectManager& GetObjectManager() { return Instance().objectManager; }
-	static CameraManager& GetCameraManager() { return Instance().cameraManager; }
-	static SoundManager& GetSoundManager() { return Instance().soundManager; }
-	static SpriteManager& GetSpriteManager() { return Instance().spriteManager; }
-	static ParticleManager& GetParticleManager() { return Instance().particleManager; }
+	//Engine& Instance() { return *this; }
+	Window& GetWindow() { return window; }
+	VKInit& GetVKInit() { return vkInit; }
+	VKRenderManager& GetVKRenderManager() { return vkRenderManager; }
+	GameStateManager& GetGameStateManager() { return gameStateManger; }
+	InputManager& GetInputManager() { return inputManager; }
+	ObjectManager& GetObjectManager() { return objectManager; }
+	CameraManager& GetCameraManager() { return cameraManager; }
+	SoundManager& GetSoundManager() { return soundManager; }
+	SpriteManager& GetSpriteManager() { return spriteManager; }
+	ParticleManager& GetParticleManager() { return particleManager; }
 
 	void Init(const char* title, int windowWidth, int windowHeight, bool fullScreen, WindowMode mode);
 	void Update();

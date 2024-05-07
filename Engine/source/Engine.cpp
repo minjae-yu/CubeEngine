@@ -27,13 +27,17 @@ void Engine::Init(const char* title, int windowWidth, int windowHeight, bool ful
 	//inputManager = new InputManager;
 	//objectManager = new ObjectManager;
 	//cameraManager = new CameraManager;
-	vkInit.Initialize();
-	vkRenderManager.Initialize(/*window.GetWindow()*/);
-	cameraManager.Init({ windowWidth ,windowHeight }, CameraType::TwoDimension, 1.f);
+	vkInit.Initialize(this);
+	vkRenderManager.Initialize(this);
+	cameraManager.Init(this, { windowWidth ,windowHeight }, CameraType::TwoDimension, 1.f);
 
 	//soundManager = new SoundManager;
 	soundManager.Initialize();
-
+	spriteManager.SetEngine(this);
+	gameStateManger.SetEngine(this);
+	inputManager.SetEngine(this);
+	objectManager.SetEngine(this);
+	particleManager.SetEngine(this);
 	//spriteManager = new SpriteManager;
 	//particleManager = new ParticleManager();
 }
@@ -98,6 +102,12 @@ void Engine::End()
 	//delete soundManager;
 	//delete window;
 	//delete vkInit;
+
+	gameStateManger.End();
+	particleManager.Clear();
+	objectManager.End();
+	spriteManager.End();
+
 }
 
 void Engine::SetFPS(FrameRate fps)

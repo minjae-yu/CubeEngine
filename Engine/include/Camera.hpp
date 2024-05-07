@@ -19,11 +19,13 @@ enum CameraCenterMode
 	NormalizedDeviceCoordinates
 };
 
+class Engine;
+
 class Camera
 {
 public:
-	constexpr Camera() noexcept = default;
-	~Camera() {};
+	Camera() = default;
+	~Camera() { engine = nullptr; }
 
 	void Update();
 
@@ -53,6 +55,8 @@ public:
 	void            SetNear(float amount) noexcept { nearClip = amount; }
 	void            SetFar(float amount) noexcept { farClip = amount; }
 	void            SetZoom(glm::vec2 size) noexcept { cameraViewSize = size; }
+
+	void SetEngine(Engine* engine_) { engine = engine_; }
 private:
 	glm::vec3 cameraPosition{ 0.0f, 0.0f, 1.0f };
 	glm::vec3 cameraTarget{ 0.0f, 0.0f, 0.0f };
@@ -73,4 +77,6 @@ private:
 	glm::vec2 cameraViewSize = glm::vec2(0.f);
 	CameraType cameraType = CameraType::NONE;
 	CameraCenterMode cameraCenterMode = RightOriginCenter;
+
+	Engine* engine = nullptr;
 };

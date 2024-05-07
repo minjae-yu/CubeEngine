@@ -22,6 +22,10 @@ public:
 	void Update(float dt);
 	void Clear();
 	Particle* GetLastParticle() { return &particles.at(particles.size() - 1); }
+
+	void SetEngine(Engine* engine_) { engine = engine_; }
 private:
 	std::vector<Particle> particles;
+
+	Engine* engine = nullptr;
 };

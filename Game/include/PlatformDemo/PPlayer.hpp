@@ -20,7 +20,7 @@ class PPlayer : public Object
 public:
 	PPlayer() = default;
 	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectType);
-	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys);
+	PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys, Engine* engine_);
 	~PPlayer() { End(); }
 
 	void Init() override;

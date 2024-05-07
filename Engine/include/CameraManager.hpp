@@ -5,10 +5,11 @@
 #include "Camera.hpp"
 
 class Object;
+class Engine;
 class CameraManager
 {
 public:
-	void Init(glm::vec2 viewSize, CameraType type = CameraType::TwoDimension, float zoom = 45.f, float angle = 0.f);
+	void Init(Engine* engine, glm::vec2 viewSize, CameraType type = CameraType::TwoDimension, float zoom = 45.f, float angle = 0.f);
 	void Update();
 	void TargetAt(glm::vec3 targetLocation);
 	void Reset();

@@ -34,12 +34,14 @@ enum class EditorMode
 };
 
 class PlatformDemoSystem;
+class Engine;
+
 class PDemoMapEditorDemo
 {
 public:
 	PDemoMapEditorDemo() = default;
-	PDemoMapEditorDemo(PlatformDemoSystem* sys) { pSys = sys; }
-	~PDemoMapEditorDemo() { pSys = nullptr; }
+	PDemoMapEditorDemo(Engine* engine_, PlatformDemoSystem* sys) { pSys = sys; engine = engine_;}
+	~PDemoMapEditorDemo() { pSys = nullptr; engine = nullptr; }
 
 	void LoadLevelData(const std::filesystem::path& filePath);
 	void SaveLevelData(const std::filesystem::path& outFilePath);
@@ -74,13 +76,15 @@ private:
 	BackgroundManager* bgm = nullptr;
 	int backGSpriteNum = 0;
 	int objectNum = 0;
+
+	Engine* engine = nullptr;
 };
 
 class PlatformDemoSystem
 {
 public:
-	PlatformDemoSystem() {}
-	~PlatformDemoSystem() = default;
+	PlatformDemoSystem(Engine* engine_) { engine = engine_; }
+	~PlatformDemoSystem() { engine = nullptr; }
 
 	void Init();
 	void Update(float dt);
@@ -106,4 +110,6 @@ protected:
 
 	float maxHp = 100.f;
 	float hp = 100.f;
+
+	Engine* engine = nullptr;
 };

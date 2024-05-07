@@ -6,11 +6,12 @@
 #include <vector>
 #include "BasicComponents/Sprite.hpp"
 
+class Engine;
 class PocketBallSystem
 {
 public:
-	PocketBallSystem() = default;
-	~PocketBallSystem() {};
+	PocketBallSystem(Engine* engine_) { engine = engine_; }
+	~PocketBallSystem() { engine = nullptr; }
 
 	void Init();
 	void Update(float dt);
@@ -21,6 +22,8 @@ public:
 	int GetBallNum() { return ballNum; }
 
 	void SetPlayerBall(Object* obj);
+
+	Engine* GetEngine() { return engine; }
 private:
 	Sprite* cursor = nullptr;
 	Sprite* powerMeter = nullptr;
@@ -38,4 +41,6 @@ private:
 	int ballNum = 0;
 	bool isShot = false;
 	bool isIncrease = true;
+
+	Engine* engine = nullptr;
 };

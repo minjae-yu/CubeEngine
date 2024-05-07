@@ -7,9 +7,9 @@
 #include "Engine.hpp"
 #include <iostream>
 
-VKDescriptor::VKDescriptor()
+VKDescriptor::VKDescriptor(VKInit* vkInit_)
 {
-	vkInit = &Engine::Instance().GetVKInit();
+	vkInit = vkInit_;
 
 	InitDescriptorSetLayouts();
 	InitDescriptorPool();
@@ -26,6 +26,8 @@ VKDescriptor::~VKDescriptor()
 	//vkDestroyDescriptorSetLayout(*vkInit->GetDevice(), vkTextureDescriptorSetLayout, nullptr);
 	//Destroy DescriptorPool
 	vkDestroyDescriptorPool(*vkInit->GetDevice(), vkDescriptorPool, nullptr);
+
+	vkInit = nullptr;
 }
 
 void VKDescriptor::InitDescriptorSetLayouts()

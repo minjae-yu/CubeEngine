@@ -3,12 +3,12 @@
 //File: PBullet.hpp
 #pragma once
 #include "Object.hpp"
-
+ 
 class PBullet : public Object
 {
 public:
     PBullet() = default;
-	PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name);
+	PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name, Engine* engine);
 	~PBullet() {};
 
 	void Init() override;

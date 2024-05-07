@@ -15,7 +15,7 @@
 
 VKRenderManager::~VKRenderManager() 
 {
-	vkDeviceWaitIdle(*Engine::Instance().GetVKInit().GetDevice());
+	vkDeviceWaitIdle(*engine->GetVKInit().GetDevice());
 
 #ifdef _DEBUG
 	//delete imGUI
@@ -23,13 +23,13 @@ VKRenderManager::~VKRenderManager()
 #endif
 
 	//Destroy Command Pool, also Command Buffer destroys with Command Pool
-	vkDestroyCommandPool(*Engine::Instance().GetVKInit().GetDevice(), vkCommandPool, nullptr);
+	vkDestroyCommandPool(*engine->GetVKInit().GetDevice(), vkCommandPool, nullptr);
 	//Destroy RenderPass
-	vkDestroyRenderPass(*Engine::Instance().GetVKInit().GetDevice(), vkRenderPass, nullptr);
+	vkDestroyRenderPass(*engine->GetVKInit().GetDevice(), vkRenderPass, nullptr);
 	//Destroy FrameBuffer
 	for (auto& framebuffer : vkFrameBuffers)
 	{
-		vkDestroyFramebuffer(*Engine::Instance().GetVKInit().GetDevice(), framebuffer, nullptr);
+		vkDestroyFramebuffer(*engine->GetVKInit().GetDevice(), framebuffer, nullptr);
 	}
 
 	//Destroy Buffers
@@ -47,7 +47,7 @@ VKRenderManager::~VKRenderManager()
 	//Destroy Batch ImageInfo
 	size_t texSize{ textures.size() };
 	for (size_t i = texSize; i < imageInfos.size(); ++i)
-		vkDestroySampler(*Engine::Instance().GetVKInit().GetDevice(), imageInfos[i].sampler, nullptr);
+		vkDestroySampler(*engine->GetVKInit().GetDevice(), imageInfos[i].sampler, nullptr);
 	//for(auto& i : imageInfos)
 	//	vkDestroySampler(*vkInit->GetDevice(), i.sampler, nullptr);
 
@@ -67,33 +67,36 @@ VKRenderManager::~VKRenderManager()
 
 	delete vkSwapChain;
 	//delete vkInit;
+	engine = nullptr;
 }
 
-void VKRenderManager::Initialize()
+void VKRenderManager::Initialize(Engine* engine_)
 {
+	engine = engine_;
+
 	InitCommandPool();
 	InitCommandBuffer();
 
-	vkSwapChain = new VKSwapChain(&vkCommandPool);
+	vkSwapChain = new VKSwapChain(&engine->GetVKInit(), &vkCommandPool);
 
 	InitRenderPass();
 	InitFrameBuffer(vkSwapChain->GetSwapChainImageExtent(), vkSwapChain->GetSwapChainImageViews());
 
-	vkDescriptor = new VKDescriptor;
+	vkDescriptor = new VKDescriptor(&engine->GetVKInit());
 
-	vkTextureShader = new VKShader();
+	vkTextureShader = new VKShader(engine->GetVKInit().GetDevice());
 	vkTextureShader->LoadShader("../Engine/shader/texVertex.vert", "../Engine/shader/texFragment.frag");
-	vkLineShader = new VKShader();
+	vkLineShader = new VKShader(engine->GetVKInit().GetDevice());
 	vkLineShader->LoadShader("../Engine/shader/lineVertex.vert", "../Engine/shader/lineFragment.frag");
 	std::cout << std::endl;
 
-	vkTexurePipeline = new VKPipeLine(vkDescriptor->GetDescriptorSetLayout());
+	vkTexurePipeline = new VKPipeLine(engine->GetVKInit().GetDevice(), vkDescriptor->GetDescriptorSetLayout());
 	vkTexurePipeline->InitPipeLine(vkTextureShader->GetVertexModule(), vkTextureShader->GetFragmentModule(), vkSwapChain->GetSwapChainImageExtent(), &vkRenderPass, POLYGON_MODE::FILL);
 	//vkLinePipeline = new VKPipeLine(vkDescriptor->GetDescriptorSetLayout());
 	//vkLinePipeline->InitPipeLine(vkLineShader->GetVertexModule(), vkLineShader->GetFragmentModule(), vkSwapChain->GetSwapChainImageExtent(), &vkRenderPass, POLYGON_MODE::LINE);
 
 #ifdef _DEBUG
-	imguiManager = new ImGuiManager(&vkCommandPool, &vkCommandBuffers, vkDescriptor->GetDescriptorPool(), &vkRenderPass);
+	imguiManager = new ImGuiManager(&vkCommandPool, &vkCommandBuffers, vkDescriptor->GetDescriptorPool(), &vkRenderPass, engine);
 #endif
 
 	for (int i = 0; i < 500; ++i)
@@ -103,7 +106,7 @@ void VKRenderManager::Initialize()
 
 		VkSampler immutableSampler;
 		VkResult result{ VK_SUCCESS };
-		result = vkCreateSampler(*Engine::Instance().GetVKInit().GetDevice(), &createInfo, nullptr, &immutableSampler);
+		result = vkCreateSampler(*engine->GetVKInit().GetDevice(), &createInfo, nullptr, &immutableSampler);
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.sampler = immutableSampler;
@@ -119,13 +122,13 @@ void VKRenderManager::InitCommandPool()
 	VkCommandPoolCreateInfo commandPoolInfo{};
 	commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	commandPoolInfo.queueFamilyIndex = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
+	commandPoolInfo.queueFamilyIndex = *engine->GetVKInit().GetQueueFamilyIndex();
 
 	//Create command pool
 	try
 	{
 		VkResult result{ VK_SUCCESS };
-		result = vkCreateCommandPool(*Engine::Instance().GetVKInit().GetDevice(), &commandPoolInfo, nullptr, &vkCommandPool);
+		result = vkCreateCommandPool(*engine->GetVKInit().GetDevice(), &commandPoolInfo, nullptr, &vkCommandPool);
 		if (result != VK_SUCCESS)
 		{
 			switch (result)
@@ -165,7 +168,7 @@ void VKRenderManager::InitCommandBuffer()
 	try
 	{
 		VkResult result{ VK_SUCCESS };
-		result = vkAllocateCommandBuffers(*Engine::Instance().GetVKInit().GetDevice(), &allocateInfo, &vkCommandBuffers[0]);
+		result = vkAllocateCommandBuffers(*engine->GetVKInit().GetDevice(), &allocateInfo, &vkCommandBuffers[0]);
 		if (result != VK_SUCCESS)
 		{
 			switch (result)
@@ -194,7 +197,7 @@ void VKRenderManager::InitCommandBuffer()
 
 void VKRenderManager::InitRenderPass()
 {
-	VkSurfaceFormatKHR surfaceFormat = Engine::Instance().GetVKInit().SetSurfaceFormat();
+	VkSurfaceFormatKHR surfaceFormat = engine->GetVKInit().SetSurfaceFormat();
 
 	//Create Attachment Description
 	VkAttachmentDescription attachmentDescription{};
@@ -229,7 +232,7 @@ void VKRenderManager::InitRenderPass()
 	try
 	{
 		VkResult result{ VK_SUCCESS };
-		result = vkCreateRenderPass(*Engine::Instance().GetVKInit().GetDevice(), &createInfo, nullptr, &vkRenderPass);
+		result = vkCreateRenderPass(*engine->GetVKInit().GetDevice(), &createInfo, nullptr, &vkRenderPass);
 		if (result != VK_SUCCESS)
 		{
 			switch (result)
@@ -278,7 +281,7 @@ void VKRenderManager::InitFrameBuffer(VkExtent2D* swapchainImageExtent_, std::ve
 
 			//Create framebuffer
 			VkResult result{ VK_SUCCESS };
-			result = vkCreateFramebuffer(*Engine::Instance().GetVKInit().GetDevice(), &createInfo, nullptr, &vkFrameBuffers[i]);
+			result = vkCreateFramebuffer(*engine->GetVKInit().GetDevice(), &createInfo, nullptr, &vkFrameBuffers[i]);
 			if (result != VK_SUCCESS)
 			{
 				switch (result)
@@ -311,15 +314,15 @@ void VKRenderManager::CleanSwapChain()
 	//Destroy FrameBuffer
 	for (auto& framebuffer : vkFrameBuffers)
 	{
-		vkDestroyFramebuffer(*Engine::Instance().GetVKInit().GetDevice(), framebuffer, nullptr);
+		vkDestroyFramebuffer(*engine->GetVKInit().GetDevice(), framebuffer, nullptr);
 	}
 	//Destroy ImageView
 	for (auto& imageView : *vkSwapChain->GetSwapChainImageViews())
 	{
-		vkDestroyImageView(*Engine::Instance().GetVKInit().GetDevice(), imageView, nullptr);
+		vkDestroyImageView(*engine->GetVKInit().GetDevice(), imageView, nullptr);
 	}
 	//Destroy SwapChain
-	vkDestroySwapchainKHR(*Engine::Instance().GetVKInit().GetDevice(), *vkSwapChain->GetSwapChain(), nullptr);
+	vkDestroySwapchainKHR(*engine->GetVKInit().GetDevice(), *vkSwapChain->GetSwapChain(), nullptr);
 }
 
 void VKRenderManager::RecreateSwapChain(Window* window_)
@@ -329,9 +332,9 @@ void VKRenderManager::RecreateSwapChain(Window* window_)
 	{
 		SDL_PumpEvents();
 	}
-	SDL_GL_GetDrawableSize(Engine::Instance().GetWindow().GetWindow(), &width, &height);
+	SDL_GL_GetDrawableSize(engine->GetWindow().GetWindow(), &width, &height);
 
-	vkDeviceWaitIdle(*Engine::Instance().GetVKInit().GetDevice());
+	vkDeviceWaitIdle(*engine->GetVKInit().GetDevice());
 
 	//CleanSwapChain();
 
@@ -342,20 +345,20 @@ void VKRenderManager::RecreateSwapChain(Window* window_)
 	//Destroy FrameBuffer
 	for (auto& framebuffer : vkFrameBuffers)
 	{
-		vkDestroyFramebuffer(*Engine::Instance().GetVKInit().GetDevice(), framebuffer, nullptr);
+		vkDestroyFramebuffer(*engine->GetVKInit().GetDevice(), framebuffer, nullptr);
 	}
 
 	delete vkSwapChain;
-	vkSwapChain = new VKSwapChain(&vkCommandPool);
+	vkSwapChain = new VKSwapChain(&engine->GetVKInit(), &vkCommandPool);
 	InitFrameBuffer(vkSwapChain->GetSwapChainImageExtent(), vkSwapChain->GetSwapChainImageViews());
 }
 
 void VKRenderManager::LoadTexture(const std::filesystem::path& path_, std::string name_)
 {
-	VKTexture* texture = new VKTexture(&Engine::Instance().GetVKInit(), &vkCommandPool);
+	VKTexture* texture = new VKTexture(&engine->GetVKInit(), &vkCommandPool);
 	texture->LoadTexture(path_, name_);
 
-	vkDestroySampler(*Engine::Instance().GetVKInit().GetDevice(), imageInfos[textures.size()].sampler, nullptr);
+	vkDestroySampler(*engine->GetVKInit().GetDevice(), imageInfos[textures.size()].sampler, nullptr);
 	textures.push_back(texture);
 
 	int texId = static_cast<int>(textures.size() - 1);
@@ -370,7 +373,7 @@ void VKRenderManager::LoadQuad(glm::vec4 color_, float isTex_, float isTexel_)
 	texVertices.push_back(Vertex(glm::vec4(-1.f, -1.f, 1.f, 1.f), quadCount));
 	if (texVertex != nullptr)
 		delete texVertex;
-	texVertex = new VKVertexBuffer(&Engine::Instance().GetVKInit(), &texVertices);
+	texVertex = new VKVertexBuffer(&engine->GetVKInit(), &texVertices);
 
 	uint64_t indexNumber{ texVertices.size() / 4 - 1 };
 	texIndices.push_back(static_cast<uint16_t>(4 * indexNumber));
@@ -381,17 +384,17 @@ void VKRenderManager::LoadQuad(glm::vec4 color_, float isTex_, float isTexel_)
 	texIndices.push_back(static_cast<uint16_t>(4 * indexNumber));
 	if (texIndex != nullptr)
 		delete texIndex;
-	texIndex = new VKIndexBuffer(&Engine::Instance().GetVKInit(), &vkCommandPool, &texIndices);
+	texIndex = new VKIndexBuffer(&engine->GetVKInit(), &vkCommandPool, &texIndices);
 
 	quadCount++;
 
 	if (uVertex != nullptr)
 		delete uVertex;
-	uVertex = new VKUniformBuffer<VertexUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uVertex = new VKUniformBuffer<VertexUniform>(&engine->GetVKInit(), quadCount);
 
 	if (uFragment != nullptr)
 		delete uFragment;
-	uFragment = new VKUniformBuffer<FragmentUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uFragment = new VKUniformBuffer<FragmentUniform>(&engine->GetVKInit(), quadCount);
 
 	VertexUniform mat;
 	mat.model = glm::mat4(1.f);
@@ -415,7 +418,7 @@ void VKRenderManager::LoadLineQuad(glm::vec4 color_)
 	lineVertices.push_back(Vertex(glm::vec4(-1.f, -1.f, 1.f, 1.f), quadCount));
 	if (lineVertex != nullptr)
 		delete lineVertex;
-	lineVertex = new VKVertexBuffer(&Engine::Instance().GetVKInit(), &lineVertices);
+	lineVertex = new VKVertexBuffer(&engine->GetVKInit(), &lineVertices);
 
 	uint64_t indexNumber{ lineVertices.size() / 4 - 1 };
 	lineIndices.push_back(static_cast<uint16_t>(4 * indexNumber));
@@ -426,17 +429,17 @@ void VKRenderManager::LoadLineQuad(glm::vec4 color_)
 	lineIndices.push_back(static_cast<uint16_t>(4 * indexNumber));
 	if (lineIndex != nullptr)
 		delete lineIndex;
-	lineIndex = new VKIndexBuffer(&Engine::Instance().GetVKInit(), &vkCommandPool, &lineIndices);
+	lineIndex = new VKIndexBuffer(&engine->GetVKInit(), &vkCommandPool, &lineIndices);
 
 	quadCount++;
 
 	if (uVertex != nullptr)
 		delete uVertex;
-	uVertex = new VKUniformBuffer<VertexUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uVertex = new VKUniformBuffer<VertexUniform>(&engine->GetVKInit(), quadCount);
 
 	if (uFragment != nullptr)
 		delete uFragment;
-	uFragment = new VKUniformBuffer<FragmentUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uFragment = new VKUniformBuffer<FragmentUniform>(&engine->GetVKInit(), quadCount);
 
 	VertexUniform mat;
 	mat.model = glm::mat4(1.f);
@@ -458,7 +461,7 @@ void VKRenderManager::LoadVertices(std::vector<Vertex> vertices_, std::vector<ui
 	}
 	if (texVertex != nullptr)
 		delete texVertex;
-	texVertex = new VKVertexBuffer(&Engine::Instance().GetVKInit(), &texVertices);
+	texVertex = new VKVertexBuffer(&engine->GetVKInit(), &texVertices);
 	
 	uint64_t indexNumber{ texVertices.size() / vertices_.size() - 1 };
 	for (auto index : indices_)
@@ -467,17 +470,17 @@ void VKRenderManager::LoadVertices(std::vector<Vertex> vertices_, std::vector<ui
 	}
 	if (texIndex != nullptr)
 		delete texIndex;
-	texIndex = new VKIndexBuffer(&Engine::Instance().GetVKInit(), &vkCommandPool, &texIndices);
+	texIndex = new VKIndexBuffer(&engine->GetVKInit(), &vkCommandPool, &texIndices);
 
 	quadCount++;
 
 	if (uVertex != nullptr)
 		delete uVertex;
-	uVertex = new VKUniformBuffer<VertexUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uVertex = new VKUniformBuffer<VertexUniform>(&engine->GetVKInit(), quadCount);
 
 	if (uFragment != nullptr)
 		delete uFragment;
-	uFragment = new VKUniformBuffer<FragmentUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uFragment = new VKUniformBuffer<FragmentUniform>(&engine->GetVKInit(), quadCount);
 
 	VertexUniform mat;
 	mat.model = glm::mat4(1.f);
@@ -498,7 +501,7 @@ void VKRenderManager::LoadLineVertices(std::vector<Vertex> vertices_, std::vecto
 	}
 	if (lineVertex != nullptr)
 		delete lineVertex;
-	lineVertex = new VKVertexBuffer(&Engine::Instance().GetVKInit(), &lineVertices);
+	lineVertex = new VKVertexBuffer(&engine->GetVKInit(), &lineVertices);
 
 	uint64_t indexNumber{ lineVertices.size() / vertices_.size() - 1 };
 	for (auto index : indices_)
@@ -507,17 +510,17 @@ void VKRenderManager::LoadLineVertices(std::vector<Vertex> vertices_, std::vecto
 	}
 	if (lineIndex != nullptr)
 		delete lineIndex;
-	lineIndex = new VKIndexBuffer(&Engine::Instance().GetVKInit(), &vkCommandPool, &lineIndices);
+	lineIndex = new VKIndexBuffer(&engine->GetVKInit(), &vkCommandPool, &lineIndices);
 
 	quadCount++;
 
 	if (uVertex != nullptr)
 		delete uVertex;
-	uVertex = new VKUniformBuffer<VertexUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uVertex = new VKUniformBuffer<VertexUniform>(&engine->GetVKInit(), quadCount);
 
 	if (uFragment != nullptr)
 		delete uFragment;
-	uFragment = new VKUniformBuffer<FragmentUniform>(&Engine::Instance().GetVKInit(), quadCount);
+	uFragment = new VKUniformBuffer<FragmentUniform>(&engine->GetVKInit(), quadCount);
 
 	VertexUniform mat;
 	mat.model = glm::mat4(1.f);
@@ -564,7 +567,7 @@ void VKRenderManager::DeleteWithIndex()
 
 	//Create Command Buffer
 	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(*Engine::Instance().GetVKInit().GetDevice(), &allocateInfo, &commandBuffer);
+	vkAllocateCommandBuffers(*engine->GetVKInit().GetDevice(), &allocateInfo, &commandBuffer);
 
 	//Create Command Buffer Begin Info
 	VkCommandBufferBeginInfo beginInfo{};
@@ -603,10 +606,10 @@ void VKRenderManager::DeleteWithIndex()
 
 	//Submit Queue to Command Buffer
 	//vkQueueSubmit(*vkInit->GetQueue(), 1, &submitInfo, *vkSwapChain->GetFence());
-	vkQueueSubmit(*Engine::Instance().GetVKInit().GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueSubmit(*engine->GetVKInit().GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 
 	//Wait until all submitted command buffers are handled
-	vkDeviceWaitIdle(*Engine::Instance().GetVKInit().GetDevice());
+	vkDeviceWaitIdle(*engine->GetVKInit().GetDevice());
 }
 
 VKTexture* VKRenderManager::GetTexture(std::string name)
@@ -628,12 +631,12 @@ VKTexture* VKRenderManager::GetTexture(std::string name)
 void VKRenderManager::BeginRender()
 {
 	isRecreated = false;
-	Window* window_ = &Engine::GetWindow();
+	Window* window_ = &engine->GetWindow();
 	vkSemaphores = (*vkSwapChain->GetSemaphores())[frameIndex];
 
 	//Get image index from swapchain
 	//uint32_t swapchainIndex;
-	VkResult result = vkAcquireNextImageKHR(*Engine::Instance().GetVKInit().GetDevice(), *vkSwapChain->GetSwapChain(), UINT64_MAX, vkSemaphores[IMAGE_AVAILABLE_INDEX], VK_NULL_HANDLE, &swapchainIndex);
+	VkResult result = vkAcquireNextImageKHR(*engine->GetVKInit().GetDevice(), *vkSwapChain->GetSwapChain(), UINT64_MAX, vkSemaphores[IMAGE_AVAILABLE_INDEX], VK_NULL_HANDLE, &swapchainIndex);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
 		RecreateSwapChain(window_);
@@ -650,11 +653,11 @@ void VKRenderManager::BeginRender()
 	currentFence = &(*vkSwapChain->GetFences())[frameIndex];
 
 	//Wait for fence to be signaled
-	if (vkGetFenceStatus(*Engine::Instance().GetVKInit().GetDevice(), *currentFence) == VK_NOT_READY)
-		vkWaitForFences(*Engine::Instance().GetVKInit().GetDevice(), 1, currentFence, VK_TRUE, UINT64_MAX);
+	if (vkGetFenceStatus(*engine->GetVKInit().GetDevice(), *currentFence) == VK_NOT_READY)
+		vkWaitForFences(*engine->GetVKInit().GetDevice(), 1, currentFence, VK_TRUE, UINT64_MAX);
 
 	//Set fence to unsignaled
-	vkResetFences(*Engine::Instance().GetVKInit().GetDevice(), 1, currentFence);
+	vkResetFences(*engine->GetVKInit().GetDevice(), 1, currentFence);
 
 	//--------------------Descriptor Update--------------------//
 
@@ -684,7 +687,7 @@ void VKRenderManager::BeginRender()
 
 			//Update DescriptorSet
 			//DescriptorSet does not have to update every frame since it points same uniform buffer
-			vkUpdateDescriptorSets(*Engine::Instance().GetVKInit().GetDevice(), 1, &descriptorWrite, 0, nullptr);
+			vkUpdateDescriptorSets(*engine->GetVKInit().GetDevice(), 1, &descriptorWrite, 0, nullptr);
 		}
 		uVertex->UpdateUniform(vertexVector, frameIndex);
 	}
@@ -724,7 +727,7 @@ void VKRenderManager::BeginRender()
 
 			//Update DescriptorSet
 			//DescriptorSet does not have to update every frame since it points same uniform buffer
-			vkUpdateDescriptorSets(*Engine::Instance().GetVKInit().GetDevice(), 2, descriptorWrite, 0, nullptr);
+			vkUpdateDescriptorSets(*engine->GetVKInit().GetDevice(), 2, descriptorWrite, 0, nullptr);
 		}
 		uFragment->UpdateUniform(fragVector, frameIndex);
 	}
@@ -752,8 +755,8 @@ void VKRenderManager::BeginRender()
 		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		barrier.srcQueueFamilyIndex = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
-		barrier.dstQueueFamilyIndex = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
+		barrier.srcQueueFamilyIndex = *engine->GetVKInit().GetQueueFamilyIndex();
+		barrier.dstQueueFamilyIndex = *engine->GetVKInit().GetQueueFamilyIndex();
 		barrier.image = swapchainImage;
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		barrier.subresourceRange.levelCount = 1;
@@ -866,8 +869,8 @@ void VKRenderManager::EndRender()
 		barrier.dstAccessMask = 0;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		barrier.srcQueueFamilyIndex = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
-		barrier.dstQueueFamilyIndex = *Engine::Instance().GetVKInit().GetQueueFamilyIndex();
+		barrier.srcQueueFamilyIndex = *engine->GetVKInit().GetQueueFamilyIndex();
+		barrier.dstQueueFamilyIndex = *engine->GetVKInit().GetQueueFamilyIndex();
 		barrier.image = swapchainImage;
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		barrier.subresourceRange.levelCount = 1;
@@ -900,10 +903,10 @@ void VKRenderManager::EndRender()
 	submitInfo.pSignalSemaphores = &vkSemaphores[RENDERING_DONE_INDEX];
 
 	//Submit queue to command buffer
-	vkQueueSubmit(*Engine::Instance().GetVKInit().GetQueue(), 1, &submitInfo, *currentFence);
+	vkQueueSubmit(*engine->GetVKInit().GetQueue(), 1, &submitInfo, *currentFence);
 
 	//Wait until all submitted command buffers are handled
-	vkDeviceWaitIdle(*Engine::Instance().GetVKInit().GetDevice());
+	vkDeviceWaitIdle(*engine->GetVKInit().GetDevice());
 
 	//Create present info
 	VkPresentInfoKHR presentInfo{};
@@ -918,10 +921,10 @@ void VKRenderManager::EndRender()
 	presentInfo.pImageIndices = &swapchainIndex;
 
 	//Render image on screen
-	VkResult result2 = vkQueuePresentKHR(*Engine::Instance().GetVKInit().GetQueue(), &presentInfo);
+	VkResult result2 = vkQueuePresentKHR(*engine->GetVKInit().GetQueue(), &presentInfo);
 	if (result2 == VK_ERROR_OUT_OF_DATE_KHR || result2 == VK_SUBOPTIMAL_KHR)
 	{
-		RecreateSwapChain(&Engine::GetWindow());
+		RecreateSwapChain(&engine->GetWindow());
 		return;
 	}
 	//else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)

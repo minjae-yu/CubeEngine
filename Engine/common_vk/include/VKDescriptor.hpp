@@ -12,7 +12,7 @@ class VKInit;
 class VKDescriptor
 {
 public:
-	VKDescriptor();
+	VKDescriptor(VKInit* vkInit_);
 	~VKDescriptor();
 
 	void InitDescriptorSetLayouts();
@@ -25,7 +25,7 @@ public:
 	std::array<VkDescriptorSet, 2>* GetFragmentMaterialDescriptorSets() { return &vkFragmentMaterialDescriptorSets; };
 	//std::array<VkDescriptorSet, 2>* GetTextureDescriptorSets() { return &vkTextureDescriptorSets; };
 private:
-	VKInit* vkInit;
+	VKInit* vkInit = nullptr;
 
 	std::vector<VkDescriptorSetLayout> vkDescriptorSetLayouts;
 	VkDescriptorSetLayout vkVertexMaterialDescriptorSetLayout{ VK_NULL_HANDLE };

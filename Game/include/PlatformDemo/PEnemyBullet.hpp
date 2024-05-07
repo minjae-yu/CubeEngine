@@ -8,7 +8,7 @@ class PEnemyBullet : public Object
 {
 public:
 	PEnemyBullet() = default;
-	PEnemyBullet(glm::vec3 pos_, glm::vec3 size_, std::string name);
+	PEnemyBullet(glm::vec3 pos_, glm::vec3 size_, std::string name, Engine* engine);
 	~PEnemyBullet() {};
 
 	void Init() override;

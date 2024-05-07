@@ -8,12 +8,13 @@
 #include <vector>
 #include <array>
 
+class Engine;
 class VKInit
 {
 public:
 	VKInit() = default;
 	~VKInit();
-	void Initialize();
+	void Initialize(Engine* engine_);
 
 	//void ValidationCheck();
 	void InitInstance();
@@ -21,7 +22,7 @@ public:
 	void SetQueueFamilyIndex();
 	void InitDevice();
 	void InitQueue();
-	void InitSurface();
+	void InitSurface(SDL_Window* window);
 	VkSurfaceFormatKHR SetSurfaceFormat();
 
 #ifdef _DEBUG
@@ -50,4 +51,6 @@ private:
 	VkSurfaceKHR vkSurface{ VK_NULL_HANDLE };
 
 	uint32_t queueFamilyIndex{ UINT32_MAX };
+
+	Engine* engine = nullptr;
 };

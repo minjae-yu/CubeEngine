@@ -21,41 +21,23 @@
 int main(void)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetBreakAlloc(183);
+    _CrtSetBreakAlloc(1570);
     //_crtBreakAlloc = 157;
 
-    GameStateManager gameStateManager;
-    InputManager inputManager;
-    ObjectManager objectManager;
-    CameraManager cameraManager;
-    SoundManager soundManager;
-    SpriteManager spriteManager;
-    ParticleManager particleManager;
-
-
-    Engine& engine = Engine::Instance();
+    Engine engine;
     engine.Init("Vulkan Demo", 1280, 720, false, WindowMode::NORMAL);
     engine.SetFPS(FrameRate::FPS_60);
 
-    gameStateManager.Init(&spriteManager, &objectManager, &particleManager, &cameraManager, &soundManager, &inputManager);
-    //soundManager.Initialize();
-    cameraManager.Init({ 1280 ,720 }, CameraType::TwoDimension, 1.f);
-    inputManager.Init(&cameraManager);
-    particleManager.InitP(&spriteManager, &cameraManager);
+    //engine.GetSoundManager().LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
+    //engine.GetSoundManager().LoadSoundFilesFromFolder("../Game/assets/Sounds");
 
-    //soundManager.LoadMusicFilesFromFolder(L"..\\Game\\assets\\Musics");
-    //soundManager.LoadSoundFilesFromFolder("../Game/assets/Sounds");
+    engine.GetGameStateManager().AddLevel(new PocketBallDemo);
+    engine.GetGameStateManager().AddLevel(new PlatformDemo);
+    engine.GetGameStateManager().LevelInit(GameLevel::POCKETBALL);
 
-    gameStateManager.AddLevel(new PocketBallDemo);
-    gameStateManager.AddLevel(new PlatformDemo);
-    gameStateManager.LevelInit(GameLevel::POCKETBALL);
-
-    engine.Update(&inputManager, &gameStateManager);
+    engine.Update();
     engine.End();
 
-    inputManager.EndP();
-    particleManager.EndP();
-    gameStateManager.End();
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtDumpMemoryLeaks();

@@ -15,6 +15,7 @@ void ObjectManager::Update(float dt)
 void ObjectManager::End()
 {
 	DestroyAllObjects();
+	engine = nullptr;
 }
 
 void ObjectManager::Draw(float dt)

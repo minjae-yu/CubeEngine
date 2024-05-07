@@ -18,36 +18,36 @@
 
 void PlatformDemo::Init()
 {
-	platformDemoSystem = new PlatformDemoSystem();
+	platformDemoSystem = new PlatformDemoSystem(engine);
 	platformDemoSystem->Init();
 
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/train_editor.png", "train_editor");
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building1.png", "building1");
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building2.png", "building2");
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building3.png", "building3");
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/rail.png", "rail");
-	Engine::GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/TrainSide.png", "trainSide");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/train_editor.png", "train_editor");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building1.png", "building1");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building2.png", "building2");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/building3.png", "building3");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/rail.png", "rail");
+	engine->GetVKRenderManager().LoadTexture("../Game/assets/PlatformDemo/TrainSide.png", "trainSide");
 
 	platformDemoSystem->LoadLevelData("../Game/assets/PlatformDemo/Stage.txt");
-	Engine::GetObjectManager().AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem);
-	Engine::GetObjectManager().AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL);
-	Engine::GetObjectManager().AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP);
+	engine->GetObjectManager().AddObject<PPlayer>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Player", platformDemoSystem, engine);
+	engine->GetObjectManager().AddObject<PEnemy>(glm::vec3{ -64.f,196.f,0.f }, glm::vec3{ 64.f, 96.f,0.f }, "Enemy", EnemyType::NORMAL, engine);
+	engine->GetObjectManager().AddObject<PEnemy>(glm::vec3{ 640.f,0.f,0.f }, glm::vec3{ 320.f, 320.f,0.f }, "Enemy", EnemyType::AIRSHIP, engine);
 	platformDemoSystem->InitHealthBar();
 }
 
 void PlatformDemo::Update(float dt)
 {
-	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
+	if (engine->GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
 	{
-		Engine::GetGameStateManager().ChangeLevel(GameLevel::POCKETBALL);
+		engine->GetGameStateManager().ChangeLevel(GameLevel::POCKETBALL);
 	}
-	else if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
+	else if (engine->GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
 	{
-		Engine::GetGameStateManager().ChangeLevel(GameLevel::PLATFORMDEMO);
+		engine->GetGameStateManager().ChangeLevel(GameLevel::PLATFORMDEMO);
 	}
-	else if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::R))
+	else if (engine->GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::R))
 	{
-		Engine::GetGameStateManager().SetGameState(State::RESTART);
+		engine->GetGameStateManager().SetGameState(State::RESTART);
 	}
 
 	platformDemoSystem->Update(dt);
@@ -57,8 +57,8 @@ void PlatformDemo::Update(float dt)
 void PlatformDemo::ImGuiDraw(float /*dt*/)
 {
 	ImGui::ShowDemoWindow();
-	Engine::GetGameStateManager().StateChanger();
-	Engine::GetSoundManager().MusicPlayerForImGui();
+	engine->GetGameStateManager().StateChanger();
+	engine->GetSoundManager().MusicPlayerForImGui();
 	platformDemoSystem->UpdateMapEditorImGui();
 }
 #endif
@@ -75,8 +75,8 @@ void PlatformDemo::End()
 	delete platformDemoSystem;
 	platformDemoSystem = nullptr;
 
-	Engine::GetCameraManager().Reset();
-	Engine::GetParticleManager().Clear();
-	Engine::GetObjectManager().DestroyAllObjects();
+	engine->GetCameraManager().Reset();
+	engine->GetParticleManager().Clear();
+	engine->GetObjectManager().DestroyAllObjects();
 }
 

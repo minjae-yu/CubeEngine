@@ -28,7 +28,7 @@ class PEnemy : public Object
 {
 public:
     PEnemy() = default;
-	PEnemy(glm::vec3 pos_, glm::vec3 size_, std::string name, EnemyType type);
+	PEnemy(glm::vec3 pos_, glm::vec3 size_, std::string name, EnemyType type, Engine* engine);
 	~PEnemy() {};
 
 	void Init() override;
