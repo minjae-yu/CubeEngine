@@ -36,17 +36,8 @@ struct Background
 class BackgroundManager
 {
 public:
-	BackgroundManager(SpriteManager* spriteManager_, CameraManager* cameraManager_)
-	{
-		spriteManager = spriteManager_;
-		cameraManager = cameraManager_;
-	}
-	~BackgroundManager() 
-	{ 
-		Clear(); 
-		spriteManager = nullptr;
-		cameraManager = nullptr;
-	}
+	BackgroundManager() = default;
+	~BackgroundManager() { Clear(); }
 
 	void AddNormalBackground(std::string spriteName_, glm::vec2 position_, glm::vec2 size_, float angle_ = 0.f, glm::vec2 speed_ = { 0.f,0.f }, glm::vec2 sizeIncrements_ = { 0.f,0.f }, float depth_ = -1.f, bool isScrolled_ = true, bool isAnimated = false);
 
@@ -63,18 +54,11 @@ public:
 	std::map<std::string, std::vector<Background>>  GetVerticalParallaxBackgroundList() { return verticalParallaxBackgroundList; }
 
 	std::map<std::string, std::vector<Background>>& GetSaveBackgroundList() { return saveBackgroundList; }
-
 private:
-	bool isInOfCamera(Background& back);
-	bool isInOfCameraE(Background& back);
-
 	std::vector<Background> normalBackgroundList;
 	std::map<std::string, std::vector<Background>> verticalParallaxBackgroundList;
 
 	std::map<std::string, std::vector<Background>> saveBackgroundList;
 
 	bool isEditorMod = false;
-
-	SpriteManager* spriteManager = nullptr;
-	CameraManager* cameraManager = nullptr;
 };

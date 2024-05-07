@@ -12,18 +12,16 @@
 #include <vector>
 
 struct Vertex;
-class SpriteManager;
-class CameraManager;
 
 class Sprite : public Component
 {
 public:
 	Sprite() : Component(ComponentTypes::SPRITE) { Init(); };
 	~Sprite() override;
-
+	
 	void Init() override;
 	void Update(float dt) override;
-	void End() override;
+    void End() override;
 
 	//Update Matrices
 	void UpdateModel(glm::vec3 pos_, glm::vec3 size_, float angle);
@@ -53,12 +51,6 @@ public:
 	void SetMaterialId(int index) { materialId = index; }
 	void AddSpriteToManager();
 	void SetColor(glm::vec4 color);
-
-	void SetManagers(SpriteManager* spriteManager_, CameraManager* cameraManager_)
-	{
-		spriteManager = spriteManager_;
-		cameraManager = cameraManager_;
-	}
 private:
 	//Animation
 	glm::vec2 GetFrameTexel(int frameNum) const;
@@ -71,6 +63,4 @@ private:
 	std::vector<Animation*> animations;
 
 	int materialId = 0;
-	SpriteManager* spriteManager = nullptr;
-	CameraManager* cameraManager = nullptr;
 };

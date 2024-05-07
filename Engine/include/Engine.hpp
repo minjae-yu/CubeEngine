@@ -24,16 +24,16 @@ public:
 	static Window& GetWindow() { return Instance().window; }
 	static VKInit& GetVKInit() { return Instance().vkInit; }
 	static VKRenderManager& GetVKRenderManager() { return Instance().vkRenderManager; }
-	//static GameStateManager& GetGameStateManager() { return Instance().gameStateManger; }
-	//static InputManager& GetInputManager() { return Instance().inputManager; }
-	//static ObjectManager& GetObjectManager() { return Instance().objectManager; }
-	//static CameraManager& GetCameraManager() { return Instance().cameraManager; }
-	//static SoundManager& GetSoundManager() { return Instance().soundManager; }
-	//static SpriteManager& GetSpriteManager() { return Instance().spriteManager; }
-	//static ParticleManager& GetParticleManager() { return Instance().particleManager; }
+	static GameStateManager& GetGameStateManager() { return Instance().gameStateManger; }
+	static InputManager& GetInputManager() { return Instance().inputManager; }
+	static ObjectManager& GetObjectManager() { return Instance().objectManager; }
+	static CameraManager& GetCameraManager() { return Instance().cameraManager; }
+	static SoundManager& GetSoundManager() { return Instance().soundManager; }
+	static SpriteManager& GetSpriteManager() { return Instance().spriteManager; }
+	static ParticleManager& GetParticleManager() { return Instance().particleManager; }
 
 	void Init(const char* title, int windowWidth, int windowHeight, bool fullScreen, WindowMode mode);
-	void Update(InputManager* inputManager_, GameStateManager* gameStateManger_);
+	void Update();
 	void End();
 
 	void SetFPS(FrameRate fps);
@@ -49,11 +49,11 @@ private:
 	Window window;
 	VKInit vkInit;
 	VKRenderManager vkRenderManager;
-	/*GameStateManager gameStateManger;
+	GameStateManager gameStateManger;
 	InputManager inputManager;
 	ObjectManager objectManager;
 	CameraManager cameraManager;
 	SoundManager soundManager;
 	SpriteManager spriteManager;
-	ParticleManager particleManager;*/
+	ParticleManager particleManager;
 };

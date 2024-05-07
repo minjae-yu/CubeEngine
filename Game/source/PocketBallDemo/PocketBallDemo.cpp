@@ -26,162 +26,137 @@ void PocketBallDemo::Init()
 
 	ballAmount = 7;
 	pocketBallSystem = new PocketBallSystem();
-	pocketBallSystem->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
 
-	GameState::objectManager->AddObject<Object>(glm::vec3{ 0.f,-38.f,-0.1f }, glm::vec3{ 368.f*2 + 32.f, 510.f + 88.f,0.f }, "Table");
-	GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-	GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddMeshWithTexture("Table");
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "White", BallType::WHITE, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	pocketBallSystem->SetPlayerBall(GameState::objectManager->GetLastObject());
+	Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 0.f,-38.f,-0.1f }, glm::vec3{ 368.f*2 + 32.f, 510.f + 88.f,0.f }, "Table");
+	Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+	Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddMeshWithTexture("Table");
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ 0.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "White", BallType::WHITE, pocketBallSystem);
+	pocketBallSystem->SetPlayerBall(Engine::GetObjectManager().GetLastObject());
 
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -120.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "1", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -152.f,16.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "2", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -152.f,-16.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "3", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -184.f,32.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "4", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -184.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "5", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-	GameState::objectManager->AddObject<Ball>(glm::vec3{ -184.f,-32.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "6", BallType::OTHER, pocketBallSystem, spriteManager, cameraManager);
-	GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -120.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "1", BallType::OTHER, pocketBallSystem);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -152.f,16.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "2", BallType::OTHER, pocketBallSystem);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -152.f,-16.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "3", BallType::OTHER, pocketBallSystem);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -184.f,32.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "4", BallType::OTHER, pocketBallSystem);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -184.f,0.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "5", BallType::OTHER, pocketBallSystem);
+	Engine::GetObjectManager().AddObject<Ball>(glm::vec3{ -184.f,-32.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "6", BallType::OTHER, pocketBallSystem);
 
 	pocketBallSystem->Init();
 	pocketBallSystem->SetBallNum(ballAmount);
 
 	{
 		glm::vec2 tempS{ 0.f,0.f };
-		GameState::objectManager->AddObject<Object>(glm::vec3{ 0.f,192.f,0.f }, glm::vec3{ 640.f, 32.f,0.f }, "Wall", ObjectType::WALL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 0.f,192.f,0.f }, glm::vec3{ 640.f, 32.f,0.f }, "Wall", ObjectType::WALL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
 
-		tempS = { GameState::objectManager->GetLastObject()->GetSize().x / 2.f,GameState::objectManager->GetLastObject()->GetSize().y / 2.f };
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
+		tempS = { Engine::GetObjectManager().GetLastObject()->GetSize().x / 2.f,Engine::GetObjectManager().GetLastObject()->GetSize().y / 2.f };
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ 0.f,-192.f,0.f }, glm::vec3{ 640.f, 32.f,0.f }, "Wall", ObjectType::WALL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
-		GameState::objectManager->GetLastObject()->SetRotate(180.f);
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 0.f,-192.f,0.f }, glm::vec3{ 640.f, 32.f,0.f }, "Wall", ObjectType::WALL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
+		Engine::GetObjectManager().GetLastObject()->SetRotate(180.f);
 
-		tempS = { GameState::objectManager->GetLastObject()->GetSize().x / 2.f,GameState::objectManager->GetLastObject()->GetSize().y / 2.f };
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
+		tempS = { Engine::GetObjectManager().GetLastObject()->GetSize().x / 2.f,Engine::GetObjectManager().GetLastObject()->GetSize().y / 2.f };
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ -336.f,0.f,0.f }, glm::vec3{ 352.f, 32.f,0.f }, "Wall", ObjectType::WALL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ -336.f,0.f,0.f }, glm::vec3{ 352.f, 32.f,0.f }, "Wall", ObjectType::WALL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
 
-		tempS = { GameState::objectManager->GetLastObject()->GetSize().x / 2.f,GameState::objectManager->GetLastObject()->GetSize().y / 2.f };
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
+		tempS = { Engine::GetObjectManager().GetLastObject()->GetSize().x / 2.f,Engine::GetObjectManager().GetLastObject()->GetSize().y / 2.f };
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
-		GameState::objectManager->GetLastObject()->SetRotate(90.f);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->SetRotate(90.f);
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ 336.f,0.f,0.f }, glm::vec3{ 352.f, 32.f,0.f }, "Wall", ObjectType::WALL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 336.f,0.f,0.f }, glm::vec3{ 352.f, 32.f,0.f }, "Wall", ObjectType::WALL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,0.f });
 
-		tempS = { GameState::objectManager->GetLastObject()->GetSize().x / 2.f,GameState::objectManager->GetLastObject()->GetSize().y / 2.f };
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
+		tempS = { Engine::GetObjectManager().GetLastObject()->GetSize().x / 2.f,Engine::GetObjectManager().GetLastObject()->GetSize().y / 2.f };
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ tempS.x - 32.f, -tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x + 32.f, -tempS.y });
 		//Engine::GetObjectManager()->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, -(tempS.y - 16.f) });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
-		GameState::objectManager->GetLastObject()->SetRotate(270.f);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygon({ -tempS.x, tempS.y });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->SetRotate(270.f);
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ 336.f,192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 336.f,192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
 
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ -336.f,192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ -336.f,192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
 
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ -336.f,-192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ -336.f,-192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
 
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 
-		GameState::objectManager->AddObject<Object>(glm::vec3{ 336.f,-192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
-		GameState::objectManager->GetLastObject()->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager);
-		GameState::objectManager->GetLastObject()->AddComponent<Sprite>();
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->SetManagers(spriteManager, cameraManager);
-		GameState::objectManager->GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
+		Engine::GetObjectManager().AddObject<Object>(glm::vec3{ 336.f,-192.f,0.f }, glm::vec3{ 32.f, 32.f,0.f }, "Goal", ObjectType::GOAL);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Sprite>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Sprite>()->AddQuad({ 0.f,0.f,0.f,0.5f });
 
-		GameState::objectManager->GetLastObject()->AddComponent<Physics2D>();
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
-		GameState::objectManager->GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
+		Engine::GetObjectManager().GetLastObject()->AddComponent<Physics2D>();
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->AddCollidePolygonAABB({ 2.f, 2.f });
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetBodyType(BodyType::BLOCK);
+		Engine::GetObjectManager().GetLastObject()->GetComponent<Physics2D>()->SetMass(4.f);
 	}
 }
 
 void PocketBallDemo::Update(float dt)
 {
-	if (GameState::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
+	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_1))
 	{
-		GameState::gameStateManager->ChangeLevel(GameLevel::POCKETBALL);
+		Engine::GetGameStateManager().ChangeLevel(GameLevel::POCKETBALL);
 	}
-	else if (GameState::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
+	else if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::NUMBER_2))
 	{
-		GameState::gameStateManager->ChangeLevel(GameLevel::PLATFORMDEMO);
+		Engine::GetGameStateManager().ChangeLevel(GameLevel::PLATFORMDEMO);
 	}
 	pocketBallSystem->Update(dt);
 }
@@ -190,8 +165,8 @@ void PocketBallDemo::Update(float dt)
 void PocketBallDemo::ImGuiDraw(float /*dt*/)
 {
 	ImGui::ShowDemoWindow();
-	GameState::gameStateManager->StateChanger();
-	GameState::soundManager->MusicPlayerForImGui();
+	Engine::GetGameStateManager().StateChanger();
+	Engine::GetSoundManager().MusicPlayerForImGui();
 }
 #endif
 
@@ -211,8 +186,8 @@ void PocketBallDemo::End()
 	delete pocketBallSystem;
 	pocketBallSystem = nullptr;
 
-	GameState::cameraManager->Reset();
-	GameState::particleManager->Clear();
-	GameState::objectManager->DestroyAllObjects();
+	Engine::GetCameraManager().Reset();
+	Engine::GetParticleManager().Clear();
+	Engine::GetObjectManager().DestroyAllObjects();
 }
 

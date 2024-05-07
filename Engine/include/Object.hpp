@@ -9,19 +9,13 @@
 #include "glm/glm.hpp"
 #include "Component.hpp"
 
-class SpriteManager;
-class ObjectManager;
-class ParticleManager;
-class CameraManager;
-class InputManager;
-
 class Object
 {
 public:
 	Object() = default;
 	Object(glm::vec3 pos_, glm::vec3 size_, std::string name = "", ObjectType objectType = ObjectType::NONE);
 	Object(const Object& rhs);
-	~Object() { DestroyAllComponents(); EndManagers(); };
+	~Object() { DestroyAllComponents(); };
 	virtual void Init();
 	virtual void Update(float dt);
 	virtual void Draw(float dt);
@@ -117,23 +111,6 @@ public:
 	//	return nullptr;
 	//}
 
-	void SetManagers(SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
-	{
-		spriteManager = spriteManager_;
-		objectManager = objectManager_;
-		particleManager = particleManager_;
-		cameraManager = cameraManager_;
-		inputManager = inputManager_;
-	}
-	void EndManagers()
-	{
-		spriteManager = nullptr;
-		objectManager = nullptr;
-		particleManager = nullptr;
-		cameraManager = nullptr;
-		inputManager = nullptr;
-	}
-
 protected:
 	void DestroyAllComponents();
 
@@ -148,10 +125,4 @@ protected:
 	std::string objectName = "";
 	bool isDrawAble = true;
 	std::vector<Component*> componentList;
-
-	SpriteManager* spriteManager = nullptr;
-	ObjectManager* objectManager = nullptr;
-	ParticleManager* particleManager = nullptr;
-	CameraManager* cameraManager = nullptr;
-	InputManager* inputManager = nullptr;
 };

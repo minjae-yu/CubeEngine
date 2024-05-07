@@ -6,10 +6,9 @@
 
 void Engine::Init(const char* title, int windowWidth, int windowHeight, bool fullScreen, WindowMode mode)
 {
-	std::cout << "Select API number: ";
-	std::cout << std::endl;
 	std::cout << "0. OpenGL    1. Vulkan";
 	std::cout << std::endl << std::endl;
+	std::cout << "Select API number: ";
 	int number{ 0 };
 	std::cin >> number;
 	std::cout << std::endl;
@@ -30,19 +29,19 @@ void Engine::Init(const char* title, int windowWidth, int windowHeight, bool ful
 	//cameraManager = new CameraManager;
 	vkInit.Initialize();
 	vkRenderManager.Initialize(/*window.GetWindow()*/);
-	//cameraManager.Init({ windowWidth ,windowHeight }, CameraType::TwoDimension, 1.f);
+	cameraManager.Init({ windowWidth ,windowHeight }, CameraType::TwoDimension, 1.f);
 
 	//soundManager = new SoundManager;
-	//soundManager.Initialize();
+	soundManager.Initialize();
 
 	//spriteManager = new SpriteManager;
 	//particleManager = new ParticleManager();
 }
 
-void Engine::Update(InputManager* inputManager_, GameStateManager* gameStateManger_)
+void Engine::Update()
 {
 	SDL_Event event;
-	while (gameStateManger_->GetGameState() != State::SHUTDOWN)
+	while (gameStateManger.GetGameState() != State::SHUTDOWN)
 	{
 		timer.Update();
 		deltaTime = timer.GetDeltaTime();
@@ -55,7 +54,7 @@ void Engine::Update(InputManager* inputManager_, GameStateManager* gameStateMang
 			switch (event.type)
 			{
 			case SDL_QUIT:
-				gameStateManger_->SetGameState(State::UNLOAD);
+				gameStateManger.SetGameState(State::UNLOAD);
 				break;
 			//case SDL_WINDOWEVENT:
 			//	if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED || event.window.event == SDL_WINDOWEVENT_MOVED ||
@@ -81,8 +80,8 @@ void Engine::Update(InputManager* inputManager_, GameStateManager* gameStateMang
 				frameCount = 0;
 			}//fps
 
-			inputManager_->InputPollEvent(event);
-			gameStateManger_->Update(deltaTime);
+			inputManager.InputPollEvent(event);
+			gameStateManger.Update(deltaTime);
 		}
 	}
 }

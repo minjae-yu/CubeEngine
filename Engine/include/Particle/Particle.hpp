@@ -24,8 +24,7 @@ class Particle
 {
 public:
     Particle() = default;
-    Particle(SpriteManager* spriteManager_, CameraManager* cameraManager, glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime_
-        , ParticleType type = ParticleType::REC, std::string spriteName_ = "", glm::vec4 color_ = {1.f,1.f,1.f,1.f}, ParticleEffect particE = ParticleEffect::NORMAL);
+    Particle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime_, ParticleType type = ParticleType::REC, std::string spriteName_ = "", glm::vec4 color_ = {1.f,1.f,1.f,1.f}, ParticleEffect particE = ParticleEffect::NORMAL);
     ~Particle();
 
     void Update(float dt);

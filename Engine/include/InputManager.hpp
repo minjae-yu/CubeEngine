@@ -153,15 +153,13 @@ enum class KEYBOARDKEYS
 	 MODE = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_MODE),
 };
 
-class CameraManager;
 
 class InputManager
 {
 public:
 	InputManager() = default;
-	~InputManager() { EndP(); }
+	~InputManager() = default;
 
-	void Init(CameraManager* cameraManager_) { cameraManager = cameraManager_; }
 	void InputPollEvent(SDL_Event& event);
 
 	bool IsKeyPressed(KEYBOARDKEYS keycode);
@@ -171,7 +169,7 @@ public:
 	bool IsMouseButtonPressedOnce(MOUSEBUTTON button);
 	glm::vec2 GetMousePosition();
 
-	void EndP() { cameraManager = nullptr; }
+
 protected:
 	void KeyDown(KEYBOARDKEYS keycode)
 	{
@@ -208,6 +206,4 @@ private:
 
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStates;
 	std::unordered_map<MOUSEBUTTON, bool> mouseButtonStatePrev;
-
-	CameraManager* cameraManager = nullptr;
 };

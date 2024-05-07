@@ -7,17 +7,15 @@
 #include "Engine.hpp"
 #include <iostream>
 
-PEnemyBullet::PEnemyBullet(glm::vec3 pos_, glm::vec3 size_, std::string name, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
+PEnemyBullet::PEnemyBullet(glm::vec3 pos_, glm::vec3 size_, std::string name)
 	: Object(pos_, size_, name, ObjectType::ENEMYBULLET)
 {
-	SetManagers(spriteManager_, objectManager_, particleManager_, cameraManager_, inputManager_);
 	Init();
 	AddComponent<Physics2D>();
 	GetComponent<Physics2D>()->AddCollidePolygonAABB(size_ / 2.f);
 	GetComponent<Physics2D>()->SetGhostCollision(true);
 
 	AddComponent<Sprite>();
-	GetComponent<Sprite>()->SetManagers(Object::spriteManager, Object::cameraManager);
 	GetComponent<Sprite>()->AddQuad({ 1.f,1.f,1.f,1.f });
 }
 
@@ -32,8 +30,8 @@ void PEnemyBullet::Update(float dt)
 	position.x += speed.x * dt;
 	position.y += speed.y * dt;
 
-	if (Object::cameraManager->IsInCamera(this) == false)
+	if (Engine::GetCameraManager().IsInCamera(this) == false)
 	{
-		Object::objectManager->Destroy(Object::id);
+		Engine::GetObjectManager().Destroy(Object::id);
 	}
 }

@@ -8,7 +8,7 @@ class PBullet : public Object
 {
 public:
     PBullet() = default;
-	PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_);
+	PBullet(glm::vec3 pos_, glm::vec3 size_, std::string name);
 	~PBullet() {};
 
 	void Init() override;

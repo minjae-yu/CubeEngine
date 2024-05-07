@@ -7,7 +7,6 @@
 ParticleManager::~ParticleManager()
 {
 	Clear();
-	EndP();
 }
 
 void ParticleManager::AddRandomParticle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime, int particleAmount, glm::vec4 color_, ParticleType type, std::string spriteName_, bool isFade)
@@ -32,12 +31,12 @@ void ParticleManager::AddRandomParticle(glm::vec3 position_, glm::vec3 size_, gl
 void ParticleManager::AddSingleParticle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime, glm::vec4 color_, ParticleType type, std::string spriteName_)
 {
 	//float newAngle = { angle_ + rand() % 1 - rand() % 360 };
-	particles.push_back(std::move(Particle(spriteManager, cameraManager, position_, size_, speed_, angle_, lifeTime, type, spriteName_, color_)));
+	particles.push_back(std::move(Particle(position_, size_, speed_, angle_, lifeTime, type, spriteName_, color_)));
 }
 
 void ParticleManager::AddSingleFadeOutParticle(glm::vec3 position_, glm::vec3 size_, glm::vec3 speed_, float angle_, float lifeTime, glm::vec4 color_, ParticleType type, std::string spriteName_, float decreaseAmount)
 {
-	particles.push_back(std::move(Particle(spriteManager, cameraManager, position_, size_, speed_, angle_, lifeTime, type, spriteName_, color_, ParticleEffect::FADEOUT)));
+	particles.push_back(std::move(Particle(position_, size_, speed_, angle_, lifeTime, type, spriteName_, color_, ParticleEffect::FADEOUT)));
 	GetLastParticle()->SetFadeOutAmount(decreaseAmount);
 }
 
@@ -64,17 +63,4 @@ void ParticleManager::Clear()
 		delete (particles.begin() + i)->GetSprite();
 	}
 	particles.clear();
-}
-
-void ParticleManager::InitP(SpriteManager* spriteManager_, CameraManager* cameraManager_)
-{
-	spriteManager = spriteManager_;
-	cameraManager = cameraManager_;
-}
-
-
-void ParticleManager::EndP()
-{
-	spriteManager = nullptr;
-	cameraManager = nullptr;
 }

@@ -14,12 +14,15 @@ GameStateManager::GameStateManager()
 
 GameStateManager::~GameStateManager()
 {
-	End();
+	for (auto& lev : levelList)
+	{
+		delete lev;
+	}
+	levelList.clear();
 }
 
 void GameStateManager::LevelInit()
 {
-	levelList.at(static_cast<int>(currentLevel))->SetManagers(spriteManager, objectManager, particleManager, cameraManager, inputManager, soundManager, this);
 	levelList.at(static_cast<int>(currentLevel))->Init();
 
 	if (state != State::CHANGE)
@@ -34,16 +37,6 @@ void GameStateManager::LevelInit(GameLevel currentLevel_)
 #ifdef _DEBUG
 	std::cout << "Load Complete" << std::endl;
 #endif
-}
-
-void GameStateManager::Init(SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, SoundManager* soundManager_, InputManager* inputManager_)
-{
-	spriteManager = spriteManager_;
-	objectManager = objectManager_;
-	particleManager = particleManager_;
-	cameraManager = cameraManager_;
-	soundManager = soundManager_;
-	inputManager = inputManager_;
 }
 
 void GameStateManager::Update(float dt)
@@ -78,25 +71,24 @@ void GameStateManager::Update(float dt)
 		else
 		{
 			levelList.at(static_cast<int>(currentLevel))->Update(dt);
-			spriteManager->Update(dt);
-			objectManager->Update(dt);
-			particleManager->Update(dt);
-			cameraManager->Update();
+			Engine::GetSpriteManager().Update(dt);
+			Engine::GetObjectManager().Update(dt);
+			Engine::GetParticleManager().Update(dt);
+			Engine::GetCameraManager().Update();
 			CollideObjects();
 
 			if (!(SDL_GetWindowFlags(Engine::GetWindow().GetWindow()) & SDL_WINDOW_MINIMIZED))
 			{
 #ifdef _DEBUG
-				//DrawWithImGui(dt);
+				DrawWithImGui(dt);
 #else
 				Draw();
 #endif
+			}
 		}
-	}
 		break;
 	case State::CHANGE:
 		levelList.at(static_cast<int>(currentLevel))->End();
-		levelList.at(static_cast<int>(currentLevel))->EndManagers();
 		currentLevel = levelSelected;
 #ifdef _DEBUG
 		std::cout << "Level Change" << std::endl;
@@ -119,7 +111,7 @@ void GameStateManager::Update(float dt)
 		break;
 	case State::SHUTDOWN:
 		break;
-}
+	}
 }
 
 void GameStateManager::Draw()
@@ -138,7 +130,6 @@ void GameStateManager::Draw()
 void GameStateManager::LevelEnd()
 {
 	levelList.at(static_cast<int>(currentLevel))->End();
-	levelList.at(static_cast<int>(currentLevel))->EndManagers();
 }
 
 void GameStateManager::AddLevel(GameState* level)
@@ -157,21 +148,6 @@ void GameStateManager::RestartLevel()
 }
 
 #ifdef _DEBUG
-void GameStateManager::End()
-{
-	for (auto& lev : levelList)
-	{
-		delete lev;
-	}
-	levelList.clear();
-
-	spriteManager = nullptr;
-	objectManager = nullptr;
-	particleManager = nullptr;
-	cameraManager = nullptr;
-	soundManager = nullptr;
-	inputManager = nullptr;
-}
 void GameStateManager::StateChanger()
 {
 	if (ImGui::BeginMainMenuBar())
@@ -224,9 +200,9 @@ const char* GameStateManager::GameLevelTypeEnumToChar(GameLevel type)
 
 void GameStateManager::CollideObjects()
 {
-	for (auto& target : objectManager->GetObjectMap())
+	for (auto& target : Engine::GetObjectManager().GetObjectMap())
 	{
-		for (auto& object : objectManager->GetObjectMap())
+		for (auto& object : Engine::GetObjectManager().GetObjectMap())
 		{
 			if (target.second != nullptr && object.second != nullptr && target.second != object.second
 				&& target.second->HasComponent<Physics2D>() == true && object.second->HasComponent<Physics2D>() == true)

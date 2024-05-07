@@ -14,18 +14,15 @@
 
 #include <iostream>
 
-PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectType, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
+PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, ObjectType objectType)
 	: Object(pos_, size_, name, objectType)
 {
-	SetManagers(spriteManager_, objectManager_, particleManager_, cameraManager_, inputManager_);
 }
 
-PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys, SpriteManager* spriteManager_, ObjectManager* objectManager_, ParticleManager* particleManager_, CameraManager* cameraManager_, InputManager* inputManager_)
+PPlayer::PPlayer(glm::vec3 pos_, glm::vec3 size_, std::string name, PlatformDemoSystem* sys)
 	: Object(pos_, size_, name, ObjectType::PLAYER)
 {
-	SetManagers(spriteManager_, objectManager_, particleManager_, cameraManager_, inputManager_);
 	AddComponent<Sprite>();
-	GetComponent<Sprite>()->SetManagers(Object::spriteManager, Object::cameraManager);
 	GetComponent<Sprite>()->LoadAnimation("../Game/assets/PlatformDemo/player.spt", "Player");
 
 	AddComponent<Physics2D>();
@@ -73,8 +70,8 @@ void PPlayer::Update(float dt)
 void PPlayer::End()
 {
 	platformDemoSystem = nullptr;
-	Object::particleManager->Clear();
-	Object::objectManager->DestroyAllObjects();
+	Engine::GetParticleManager().Clear();
+	Engine::GetObjectManager().DestroyAllObjects();
 }
 
 void PPlayer::CollideObject(Object* obj)
@@ -93,7 +90,7 @@ void PPlayer::CollideObject(Object* obj)
 			platformDemoSystem->HpDecrease(b->GetDamage());
 			SetInvincibleState(true);
 
-			Object::objectManager->Destroy(b->GetId());
+			Engine::GetObjectManager().Destroy(b->GetId());
 			b = nullptr;
 		}
 		break;
@@ -102,13 +99,13 @@ void PPlayer::CollideObject(Object* obj)
 
 void PPlayer::Control(float /*dt*/)
 {
-	if (Object::inputManager->IsKeyPressed(KEYBOARDKEYS::DOWN))
+	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::DOWN))
 	{
 	}
-	if (Object::inputManager->IsKeyPressed(KEYBOARDKEYS::UP))
+	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::UP))
 	{
 	}
-	if (Object::inputManager->IsKeyPressed(KEYBOARDKEYS::LEFT))
+	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::LEFT))
 	{
 		if (IsStateOn(PlayerStates::DIRECTION) == true)
 		{
@@ -117,7 +114,7 @@ void PPlayer::Control(float /*dt*/)
 		SetStateOff(PlayerStates::DIRECTION);
 		GetComponent<Physics2D>()->AddForceX(-20.f);
 	}
-	if (Object::inputManager->IsKeyPressed(KEYBOARDKEYS::RIGHT))
+	if (Engine::GetInputManager().IsKeyPressed(KEYBOARDKEYS::RIGHT))
 	{
 		if (IsStateOn(PlayerStates::DIRECTION) == false)
 		{
@@ -126,13 +123,13 @@ void PPlayer::Control(float /*dt*/)
 		SetStateOn(PlayerStates::DIRECTION);
 		GetComponent<Physics2D>()->AddForceX(20.f);
 	}
-	if (Object::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::X)
+	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::X)
 		&& IsStateOn(PlayerStates::FALLING) == false && IsStateOn(PlayerStates::JUMPING) == false)
 	{
 		Object::SetYPosition(Object::GetPosition().y + 1.f);
 		GetComponent<Physics2D>()->SetVelocityY(40.f);
 	}
-	if (Object::inputManager->IsKeyPressedOnce(KEYBOARDKEYS::Z))
+	if (Engine::GetInputManager().IsKeyPressedOnce(KEYBOARDKEYS::Z))
 	{
 		if (canAttack == true)
 		{
@@ -141,14 +138,14 @@ void PPlayer::Control(float /*dt*/)
 				canAttack = false;
 			}
 
-			Object::objectManager->AddObject<PBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "Bullet", Object::spriteManager, Object::objectManager, Object::particleManager, Object::cameraManager, Object::inputManager);
+			Engine::GetObjectManager().AddObject<PBullet>(position, glm::vec3{ 8.f,8.f,0.f }, "Bullet");
 			if (IsStateOn(PlayerStates::DIRECTION))
 			{
-				Object::objectManager->GetLastObject()->SetXSpeed(1000.f);
+				Engine::GetObjectManager().GetLastObject()->SetXSpeed(1000.f);
 			}
 			else
 			{
-				Object::objectManager->GetLastObject()->SetXSpeed(-1000.f);
+				Engine::GetObjectManager().GetLastObject()->SetXSpeed(-1000.f);
 			}
 		}
 	}
