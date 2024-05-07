@@ -159,7 +159,7 @@ class InputManager
 {
 public:
 	InputManager() = default;
-	~InputManager() { cameraManager = nullptr; }
+	~InputManager() { EndP(); }
 
 	void Init(CameraManager* cameraManager_) { cameraManager = cameraManager_; }
 	void InputPollEvent(SDL_Event& event);
@@ -171,7 +171,7 @@ public:
 	bool IsMouseButtonPressedOnce(MOUSEBUTTON button);
 	glm::vec2 GetMousePosition();
 
-
+	void EndP() { cameraManager = nullptr; }
 protected:
 	void KeyDown(KEYBOARDKEYS keycode)
 	{

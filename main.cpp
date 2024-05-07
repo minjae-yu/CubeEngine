@@ -21,7 +21,7 @@
 int main(void)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetBreakAlloc(1991827);
+    _CrtSetBreakAlloc(183);
     //_crtBreakAlloc = 157;
 
     GameStateManager gameStateManager;
@@ -38,7 +38,7 @@ int main(void)
     engine.SetFPS(FrameRate::FPS_60);
 
     gameStateManager.Init(&spriteManager, &objectManager, &particleManager, &cameraManager, &soundManager, &inputManager);
-    soundManager.Initialize();
+    //soundManager.Initialize();
     cameraManager.Init({ 1280 ,720 }, CameraType::TwoDimension, 1.f);
     inputManager.Init(&cameraManager);
     particleManager.InitP(&spriteManager, &cameraManager);
@@ -48,10 +48,14 @@ int main(void)
 
     gameStateManager.AddLevel(new PocketBallDemo);
     gameStateManager.AddLevel(new PlatformDemo);
-    gameStateManager.LevelInit(GameLevel::PLATFORMDEMO);
+    gameStateManager.LevelInit(GameLevel::POCKETBALL);
 
     engine.Update(&inputManager, &gameStateManager);
     engine.End();
+
+    inputManager.EndP();
+    particleManager.EndP();
+    gameStateManager.End();
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtDumpMemoryLeaks();

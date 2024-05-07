@@ -45,6 +45,8 @@ public:
 
 	void SetGameState(State state_) { state = state_; }
 	State GetGameState() { return state; }
+	
+	void End();
 #ifdef _DEBUG
 	void StateChanger();
 	void DrawWithImGui(float dt);

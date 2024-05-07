@@ -14,18 +14,7 @@ GameStateManager::GameStateManager()
 
 GameStateManager::~GameStateManager()
 {
-	for (auto& lev : levelList)
-	{
-		delete lev;
-	}
-	levelList.clear();
-
-	spriteManager = nullptr;
-	objectManager = nullptr;
-	particleManager = nullptr;
-	cameraManager = nullptr;
-	soundManager = nullptr;
-	inputManager = nullptr;
+	End();
 }
 
 void GameStateManager::LevelInit()
@@ -98,7 +87,7 @@ void GameStateManager::Update(float dt)
 			if (!(SDL_GetWindowFlags(Engine::GetWindow().GetWindow()) & SDL_WINDOW_MINIMIZED))
 			{
 #ifdef _DEBUG
-				DrawWithImGui(dt);
+				//DrawWithImGui(dt);
 #else
 				Draw();
 #endif
@@ -168,6 +157,21 @@ void GameStateManager::RestartLevel()
 }
 
 #ifdef _DEBUG
+void GameStateManager::End()
+{
+	for (auto& lev : levelList)
+	{
+		delete lev;
+	}
+	levelList.clear();
+
+	spriteManager = nullptr;
+	objectManager = nullptr;
+	particleManager = nullptr;
+	cameraManager = nullptr;
+	soundManager = nullptr;
+	inputManager = nullptr;
+}
 void GameStateManager::StateChanger()
 {
 	if (ImGui::BeginMainMenuBar())
